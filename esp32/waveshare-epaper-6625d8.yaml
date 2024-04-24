@@ -4,6 +4,8 @@ substitutions:
 
 esphome:
   name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
   on_boot:
       priority: 200.0
       then:
@@ -22,6 +24,10 @@ esp32:
   framework:
     type: arduino
 
+# Pins for Waveshare ePaper ESP Board
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO14
 
 # Enable logging
 logger:
@@ -30,10 +36,25 @@ logger:
 api:
   encryption:
     key: "VJMi9X5Fk8nSx/45ycpJzCBrWyF4XxG2TyTheGcjgdY="
-
 ota:
   password: "3a328410f03e6b4c2e45ba985dc11ad7"
 
+# Wifi information
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${name}
+    password: ${name}
+
+captive_portal:
+
+###############################################################################
+###############################################################################
+###############################################################################
 
 button:
   - platform: shutdown
@@ -98,23 +119,176 @@ time:
                 - logger.log: "No sensors updated - skipping display refresh."
 
 
-# Wifi information
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
+###############################################################################
+###############################################################################
+###############################################################################
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: ${name}
-    password: ${name}
+# Check if motion is detected in the living room.
+binary_sensor:
+  - platform: homeassistant
+    entity_id: binary_sensor.hallway_motion_motion
+    id: hallway_motion_detected
 
+text_sensor:
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: shorttime0
+    id: hourly_forecast_shorttime0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition0
+    id: hourly_forecast_condition0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: shorttime1
+    id: hourly_forecast_shorttime1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition1
+    id: hourly_forecast_condition1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: shorttime2
+    id: hourly_forecast_shorttime2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition2
+    id: hourly_forecast_condition2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: shorttime3
+    id: hourly_forecast_shorttime3
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition3
+    id: hourly_forecast_condition3
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: weather.forecast_home
+    id: weather_current
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+sensor:
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: temperature0
+    id: hourly_forecast_temperature0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: temperature1
+    id: hourly_forecast_temperature1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: temperature2
+    id: hourly_forecast_temperature2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: temperature3
+    id: hourly_forecast_temperature3
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_temperature 
+    id: weather_current_temp
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_humidity
+    id: weather_current_humidity
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+    
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_pressure
+    id: weather_current_pressure
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  # Create sensors for monitoring Dashboard remotely.
+  - platform: template
+    name: "Dashboard - Display Last Update"
+    device_class: timestamp
+    entity_category: "diagnostic"
+    id: display_last_update
+    
+  - platform: template
+    name: "Dashboard - Recorded Display Refresh"
+    accuracy_decimals: 0
+    unit_of_measurement: "Refreshes"
+    state_class: "total_increasing"
+    entity_category: "diagnostic"
+    lambda: 'return id(recorded_display_refresh);'
+  
+  - platform: wifi_signal
+    name: "Dashboard - WiFi Signal Strength"
+    id: wifisignal
+    unit_of_measurement: "dBm"
+    entity_category: "diagnostic"
+    update_interval: 60s
+
+###############################################################################
+###############################################################################
+###############################################################################
 
 # Include custom fonts
 font:
   - file: "gfonts://Roboto"
     id: roboto_20
     size: 20
+  - file: "gfonts://Roboto"
+    id: roboto_40
+    size: 40
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: icons_50
     size: 50
@@ -150,73 +324,7 @@ font:
       - "\U000F059D" # mdi-weather-windy
       - "\U000F059E" # mdi-weather-windy-variant
 
-# Check if motion is detected in the living room.
-binary_sensor:
-  - platform: homeassistant
-    entity_id: binary_sensor.hallway_motion_motion
-    id: hallway_motion_detected
-
-
-sensor:
-  # Create sensors for monitoring Dashboard remotely.
-  - platform: template
-    name: "Dashboard - Display Last Update"
-    device_class: timestamp
-    entity_category: "diagnostic"
-    id: display_last_update
-    
-  - platform: template
-    name: "Dashboard - Recorded Display Refresh"
-    accuracy_decimals: 0
-    unit_of_measurement: "Refreshes"
-    state_class: "total_increasing"
-    entity_category: "diagnostic"
-    lambda: 'return id(recorded_display_refresh);'
-  
-  - platform: wifi_signal
-    name: "Dashboard - WiFi Signal Strength"
-    id: wifisignal
-    unit_of_measurement: "dBm"
-    entity_category: "diagnostic"
-    update_interval: 60s
-
-  # HA Sensors
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_temperature 
-    id: front_garden_temp
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_humidity
-    id: front_garden_humidity
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-    
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_pressure
-    id: front_garden_pressure
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-    
-text_sensor:
-  - platform: homeassistant
-    entity_id: weather.forecast_home
-    id: weather_current
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-# Pins for Waveshare ePaper ESP Board
-spi:
-  clk_pin: GPIO13
-  mosi_pin: GPIO14
-
-
-# Now render everything on the ePaper screen.
+# Now render everything on the ePaper screen (800x480)
 display:
   - platform: waveshare_epaper
     id: eink_display
@@ -227,7 +335,7 @@ display:
     reset_duration: 2ms
     model: 7.50inV2
     update_interval: never
-    rotation: 90°
+    #rotation: 90°
     lambda: |-
       std::map<std::string, std::string> weather_icon_map
       {
@@ -265,23 +373,26 @@ display:
 
       // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
-        it.printf(240, 390, id(roboto_20), TextAlign::TOP_CENTER, "WAITING FOR DATA...");
+        it.printf(400, 240, id(roboto_40), TextAlign::TOP_CENTER, "WAITING FOR DATA...");
       } else {
 
         // Weather Section
-        // it.image(0, 88, id(title_weather)); 
-        it.printf(240, 84, id(roboto_20), TextAlign::TOP_CENTER, "WEATHER");
-        it.printf(300, 158, id(roboto_20), TextAlign::TOP_CENTER, "%2.0f°C", id(front_garden_temp).state);
+        it.printf(100, 20, id(roboto_40), TextAlign::TOP_CENTER, "WEATHER");
 
-        it.printf(105, 282, id(roboto_20), TextAlign::TOP_CENTER, "%s", id(weather_current).state.c_str());
-        it.printf(105, 306, id(icons_50), TextAlign::TOP_CENTER, "%s", weather_icon_map[id(weather_current).state.c_str()].c_str());
+        it.printf(80, 80, id(roboto_20), TextAlign::TOP_CENTER, "NOW");
+        it.printf(80, 110, id(icons_50), TextAlign::TOP_CENTER, "%s", weather_icon_map[id(weather_current).state.c_str()].c_str());
+        it.printf(80, 170, id(roboto_20), TextAlign::TOP_CENTER, "%s", id(weather_current).state.c_str());
+        it.printf(80, 200, id(roboto_20), TextAlign::TOP_CENTER, "%2.0f°C", id(weather_current_temp).state);
+
+        it.printf(180, 80, id(roboto_20), TextAlign::TOP_CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
+        it.printf(180, 110, id(icons_50), TextAlign::TOP_CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
+        it.printf(180, 170, id(roboto_20), TextAlign::TOP_CENTER, "%s", id(hourly_forecast_condition0).state.c_str());
+        it.printf(180, 200, id(roboto_20), TextAlign::TOP_CENTER, "%2.0f°C", id(hourly_forecast_temperature0).state);
 
         // Refresh Timestamp
         // Code by EnsconcE from https://community.home-assistant.io/t/esphome-show-time/348903
         char str[17];
         time_t currTime = id(homeassistant_time).now().timestamp;
         strftime(str, sizeof(str), "%H:%M", localtime(&currTime));
-        it.printf(240, 710, id(roboto_20), TextAlign::TOP_CENTER, "REFRESHED AT %s", str);
+        it.printf(790, 470, id(roboto_20), TextAlign::BOTTOM_RIGHT, "REFRESHED AT %s", str);
       }
-
-captive_portal:
