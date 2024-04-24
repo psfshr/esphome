@@ -1,10 +1,38 @@
+template:
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: hourly
+        target:
+          entity_id:
+            - weather.forecast_home
+        response_variable: forecast_hourly
+    sensor:
+      - name: Weather Forecast Hourly
+        unique_id: weather_forecast_hourly
+        state: "{{ states('weather.forecast_home') }}"
+        attributes:
+          datetime0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].datetime }}"
+          condition0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].condition }}"
+          temperature0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].temperature }}"
+          wind_speed0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].wind_speed }}"
+          precipitation_probability: "{{ forecast_hourly['weather.forecast_home'].forecast[0].precipitation_probability }}"
+          precipitation0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].precipitation }}"
+
+
+
+
+
 
 template:
 
   # Update screen only when occupancy is detected.
 
   - binary_sensor:
-      - name: Weatherman Motion Detected
+      - name: Dashboard Motion Detected
         unique_id: "dfa78de7-d761-425f-9731-86f1af332eac"
         device_class: "occupancy"
         delay_off: 1min
@@ -16,13 +44,13 @@ template:
           {%- endif -%}
 
 
-  # Bundle up all the data to send over to Weatherman (ESPHome device).
+  # Bundle up all the data to send over to Dashboard (ESPHome device).
 
   - trigger:
       platform: time_pattern
       minutes: "/1"
     sensor:
-      - name: Weatherman Data
+      - name: Dashboard Data
         state: "OK"
         attributes:
           train_status: >
