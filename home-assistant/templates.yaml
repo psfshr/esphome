@@ -22,7 +22,7 @@
         {% endif %}
     - name: Long Date
       unique_id: long_date
-      state: "{{ now().timestamp() | timestamp_custom('%A %d %B %Y') }}"
+      state: "{{ now().timestamp() | timestamp_custom('%A %-d %B %Y') }}"
 
 - trigger:
     - platform: time_pattern

@@ -496,7 +496,7 @@ display:
       } else {
         // Header
         it.printf(panel_x_mid, weather_header_y, id(text_large), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
-        it.printf(panel_x_mid, weather_header_y2, id(text_med), COLOR_ON, TextAlign::CENTER, "On %s", id(long_date).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, weather_header_y2, id(text_med), COLOR_ON, TextAlign::CENTER, "It\'s %s", id(long_date).state.c_str(), COLOR_OFF);
 
         //it.printf(weather_fourth_x, weather_header_y, id(icons_med), COLOR_ON, TextAlign::CENTER, "%s", weather_icon_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
         //it.printf(weather_fifth_x, weather_header_y, id(text_small), COLOR_ON, TextAlign::CENTER, "%s", weather_name_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
