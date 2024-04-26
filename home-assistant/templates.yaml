@@ -1,3 +1,29 @@
+# Include in configuration.yaml via
+# template: !include templates.yaml
+# Note: Can only have one template include though
+
+- trigger:
+    - platform: time_pattern
+      hours: /1
+      #minutes: /10
+  sensor:
+    - name: TimeOfDay Greeting
+      unique_id: timeofday_greeting
+      state: >
+        {% set state = states('sensor.time') %}
+        {% if '06:00' <= state < '12:00' %}
+        Good Morning!
+        {% elif '12:00' <= state < '18:00' %}
+        Good Afternoon!
+        {% elif '18:00' <= state < '22:00' %}
+        Good Evening!
+        {% else %}
+        Good Night!
+        {% endif %}
+    - name: Long Date
+      unique_id: long_date
+      state: "{{ now().timestamp() | timestamp_custom('%A %d %B %Y') }}"
+
 - trigger:
     - platform: time_pattern
       hours: /1
@@ -12,7 +38,7 @@
       response_variable: forecast_hourly
   sensor:
     - name: Weather Forecast Hourly
-      unique_id: forecast_hourly
+      unique_id: weather_forecast_hourly
       state: "{{ states('weather.forecast_home') }}"
       attributes:
         condition_now: >

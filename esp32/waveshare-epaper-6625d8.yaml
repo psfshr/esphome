@@ -131,6 +131,20 @@ binary_sensor:
 
 text_sensor:
   - platform: homeassistant
+    entity_id: sensor.timeofday_greeting
+    id: timeofday_greeting
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'  
+
+  - platform: homeassistant
+    entity_id: sensor.long_date
+    id: long_date
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'    
+
+  - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
     attribute: shorttime0
     id: hourly_forecast_shorttime0
@@ -458,14 +472,15 @@ display:
 
       int weather_header_x = 20;
       int weather_header_y = 30;
+      int weather_header_y2 = 70;
 
       int weather_first_x = 60;
-      int weather_second_x = weather_first_x + 90;
-      int weather_third_x = weather_second_x + 90;
-      int weather_fourth_x = weather_third_x + 90;
-      int weather_fifth_x = weather_fourth_x + 90;
+      int weather_second_x = 150;
+      int weather_third_x = 240;
+      int weather_fourth_x = 330;
+      int weather_fifth_x = 420;
 
-      int weather_time_y = 100;
+      int weather_time_y = 150;
       int weather_icon_y = weather_time_y + 50;
       int weather_cdtn_y = weather_icon_y + 50;
       int weather_temp_y = weather_cdtn_y + 30;
@@ -480,7 +495,8 @@ display:
         it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Header
-        it.printf(panel_x_mid, weather_header_y, id(text_large), COLOR_ON, TextAlign::CENTER, "Hello!", COLOR_OFF);
+        it.printf(panel_x_mid, weather_header_y, id(text_large), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, weather_header_y2, id(text_med), COLOR_ON, TextAlign::CENTER, "On %s", id(long_date).state.c_str(), COLOR_OFF);
 
         //it.printf(weather_fourth_x, weather_header_y, id(icons_med), COLOR_ON, TextAlign::CENTER, "%s", weather_icon_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
         //it.printf(weather_fifth_x, weather_header_y, id(text_small), COLOR_ON, TextAlign::CENTER, "%s", weather_name_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
