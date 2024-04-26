@@ -1,0 +1,30 @@
+esphome:
+  name: "picow-0bdf30"
+  friendly_name: PicoW
+
+rp2040:
+  board: rpipicow
+  framework:
+    # Required until https://github.com/platformio/platform-raspberrypi/pull/36 is merged
+    platform_version: https://github.com/maxgerhardt/platform-raspberrypi.git
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "omP/0Qsnp7N1OVLoIPcGR+aB5D4ZVvYTf+bdxzWosaQ="
+
+ota:
+  password: "5b13a2aa6adfb94486381a7096ce9b4e"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot in case wifi connection fails
+  ap:
+    ssid: "Picow Fallback Hotspot"
+    password: "MKRXkkW0dwlN"
+    
