@@ -1,7 +1,12 @@
 # esphome-dashboard
 A simple dashboard for ESPHome with Waveshare eInk display
 
-Directly copied from https://github.com/Madelena/esphome-weatherman-dashboard with thanks :-)
+Derived from:
+- https://github.com/Madelena/esphome-weatherman-dashboard with thanks :-)
+
+In turn derived from:
+- https://github.com/DeastinY/esphome-waveshare-e-paper-dashboard
+- https://github.com/savikko/smarthome
 
 ## Hardware
 
@@ -15,6 +20,8 @@ Directly copied from https://github.com/Madelena/esphome-weatherman-dashboard wi
 
 ## Installation
 
-TBC
+- Copy the file (or the contents of the file) home-assistant/templates.yaml into the Home Assistant configuration (recommend to do as an include as noted at the top of the file)
+- Wait until the next full hour for the sensors to refresh
+- Replace the ESP32 ePaper driver board config with the contents of esp32/waveshare-epaper-xxxxxx.yaml and install.
 
 
