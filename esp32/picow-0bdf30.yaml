@@ -22,9 +22,9 @@ rp2040:
 
 # Pins for Waveshare ePaper ESP Board
 spi:
-  clk_pin: 18
-  mosi_pin: 19
-  miso_pin: 16
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+  miso_pin: GPIO16
 
 # Enable logging
 logger:
@@ -49,7 +49,7 @@ wifi:
 output:
   - platform: gpio
     pin:
-      number: 25
+      number: GPIO32
       mode: output
     id: LED
 
@@ -132,6 +132,42 @@ time:
 ###############################################################################
 
 binary_sensor:
+  - platform: status
+    name: "PicoW Status"
+  - platform: gpio
+    pin:
+      number: GPIO12
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "Button A"
+    id: button_a
+    filters:
+      - delayed_on_off: 10ms
+  - platform: gpio
+    pin:
+      number: GPIO13
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "Button B"
+    id: button_b
+    filters:
+      - delayed_on_off: 10ms
+  - platform: gpio
+    pin:
+      number: GPIO14
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "Button C"
+    id: button_c
+    filters:
+      - delayed_on_off: 10ms
+
   - platform: homeassistant
     entity_id: binary_sensor.hallway_motion_motion
     id: hallway_motion_detected
@@ -184,19 +220,22 @@ font:
 display:
   - platform: waveshare_epaper
     id: eink_display
-    cs_pin: 17
-    dc_pin: 20
-    busy_pin: 26
-    #reset_pin: GPIO30
-    reset_duration: 2ms
-    model: 2.90inv2
+    cs_pin: GPIO17
+    dc_pin: GPIO20
+    busy_pin: GPIO26
+    reset_pin: GPIO21
+    #reset_duration: 2ms
+    #model: 2.90in-b
+    model: gdey029t94
     update_interval: never
-    #rotation: 90°
+    rotation: 270°
     lambda: |-
       int panel_x = it.get_width();
       int panel_y = it.get_height();
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
+
+      it.printf(20, 20, id(text_med), COLOR_ON, TextAlign::TOP_LEFT, "HELLO", COLOR_OFF);
 
       // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
