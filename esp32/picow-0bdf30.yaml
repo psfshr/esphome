@@ -1,12 +1,30 @@
 esphome:
   name: "picow-0bdf30"
   friendly_name: PicoW
+  on_boot:
+      priority: 200.0
+      then:
+        - component.update: eink_display
+        - wait_until:
+            condition:
+              lambda: 'return id(data_updated) == true;'
+              # Wait a bit longer so all the items are received
+        - delay: 5s
+        - logger.log: "Initial sensor data received: Refreshing display..."
+        - lambda: 'id(initial_data_received) = true;'
+        - script.execute: update_screen
 
 rp2040:
   board: rpipicow
   framework:
     # Required until https://github.com/platformio/platform-raspberrypi/pull/36 is merged
     platform_version: https://github.com/maxgerhardt/platform-raspberrypi.git
+
+# Pins for Waveshare ePaper ESP Board
+spi:
+  clk_pin: 18
+  mosi_pin: 19
+  miso_pin: 16
 
 # Enable logging
 logger:
@@ -27,4 +45,163 @@ wifi:
   ap:
     ssid: "Picow Fallback Hotspot"
     password: "MKRXkkW0dwlN"
+
+output:
+  - platform: gpio
+    pin:
+      number: 25
+      mode: output
+    id: LED
+
+interval:
+  - interval: 500ms
+    then:
+      - output.turn_on: LED
+      - delay: 250ms
+      - output.turn_off: LED
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+button:
+  - platform: shutdown
+    name: "Shutdown"
+  - platform: restart
+    name: "Restart"
+  - platform: template
+    name: "Refresh Screen"
+    entity_category: config
+    on_press:
+      - script.execute: update_screen
+      
+      
+# Global variables for detecting if the display needs to be refreshed. (Thanks @paviro!)
+globals:
+  - id: data_updated
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: initial_data_received
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: recorded_display_refresh
+    type: int
+    restore_value: yes
+    initial_value: '0'
+
+
+# Script for updating screen - Refresh display and publish refresh count and time. (Thanks @paviro!)
+script:
+  - id: update_screen
+    then:
+      - lambda: 'id(data_updated) = false;'
+      - component.update: eink_display
+      - lambda: 'id(recorded_display_refresh) += 1;'
+      - lambda: 'id(display_last_update).publish_state(id(homeassistant_time).now().timestamp);'
+      
+
+# Check whether the display needs to be refreshed every minute,
+# based on whether new data is received or motion is detected. (Thanks @paviro!)
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+    on_time:
+      - seconds: 0
+        minutes: /1
+        then:
+          - if:
+              condition:
+                lambda: 'return id(data_updated) == true;'
+              then:
+                - if:
+                    condition:
+                      binary_sensor.is_on: hallway_motion_detected
+                    then:
+                      - logger.log: "Sensor data updated and activity in home detected: Refreshing display..."
+                      - script.execute: update_screen
+                    else:
+                      - logger.log: "Sensor data updated but no activity in home - skipping display refresh."
+              else:
+                - logger.log: "No sensors updated - skipping display refresh."
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+binary_sensor:
+  - platform: homeassistant
+    entity_id: binary_sensor.hallway_motion_motion
+    id: hallway_motion_detected
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: sensor.timeofday_greeting
+    id: timeofday_greeting
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+sensor:
+  # Create sensors for monitoring SmartFrame remotely.
+  - platform: template
+    name: "Display Last Update"
+    device_class: timestamp
+    entity_category: "diagnostic"
+    id: display_last_update
     
+  - platform: template
+    name: "Recorded Display Refresh"
+    accuracy_decimals: 0
+    unit_of_measurement: "Refreshes"
+    state_class: "total_increasing"
+    entity_category: "diagnostic"
+    lambda: 'return id(recorded_display_refresh);'
+  
+  - platform: wifi_signal
+    name: "WiFi Signal Strength"
+    id: wifisignal
+    unit_of_measurement: "dBm"
+    entity_category: "diagnostic"
+    update_interval: 60s
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+# Include custom fonts
+font:
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 500
+    id: text_med
+    size: 25
+
+# Now render everything on the ePaper screen (480x800)
+display:
+  - platform: waveshare_epaper
+    id: eink_display
+    cs_pin: 17
+    dc_pin: 20
+    busy_pin: 26
+    #reset_pin: GPIO30
+    reset_duration: 2ms
+    model: 2.90inv2
+    update_interval: never
+    #rotation: 90°
+    lambda: |-
+      int panel_x = it.get_width();
+      int panel_y = it.get_height();
+      int panel_x_mid = panel_x / 2;
+      int panel_y_mid = panel_y / 2;
+
+      // Show loading screen before data is received.
+      if (id(initial_data_received) == false) {
+        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
+      } else {
+        // Header
+        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+      }
