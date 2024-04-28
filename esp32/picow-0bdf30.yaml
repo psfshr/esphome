@@ -172,15 +172,35 @@ binary_sensor:
     entity_id: binary_sensor.hallway_motion_motion
     id: hallway_motion_detected
 
-text_sensor:
+sensor:
   - platform: homeassistant
-    entity_id: sensor.timeofday_greeting
-    id: timeofday_greeting
+    entity_id: sensor.front_garden_climate_temperature 
+    id: weather_current_temp
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
 
-sensor:
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_humidity
+    id: weather_current_humidity
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+    
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_pressure
+    id: weather_current_pressure
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: binary_sensor.picow_0bdf30_button_a
+    id: ha_picow_0bdf30_button_a
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
   # Create sensors for monitoring SmartFrame remotely.
   - platform: template
     name: "Display Last Update"
@@ -209,12 +229,9 @@ sensor:
 
 # Include custom fonts
 font:
-  - file:
-      type: gfonts
-      family: Montserrat
-      weight: 500
+  - file: gfonts://Roboto
     id: text_med
-    size: 25
+    size: 20
 
 # Now render everything on the ePaper screen (480x800)
 display:
@@ -228,19 +245,22 @@ display:
     #model: 2.90in-b
     model: gdey029t94
     update_interval: never
-    rotation: 270°
+    #rotation: 270°
     lambda: |-
       int panel_x = it.get_width();
       int panel_y = it.get_height();
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
 
-      it.printf(20, 20, id(text_med), COLOR_ON, TextAlign::TOP_LEFT, "HELLO", COLOR_OFF);
-
       // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
-        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
+        it.printf(panel_x_mid, panel_y_mid - 30, id(text_med), COLOR_ON, TextAlign::CENTER, "WAITING", COLOR_OFF);
+        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "FOR", COLOR_OFF);
+        it.printf(panel_x_mid, panel_y_mid + 30, id(text_med), COLOR_ON, TextAlign::CENTER, "DATA", COLOR_OFF);        
       } else {
-        // Header
-        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, 20, id(text_med), COLOR_ON, TextAlign::CENTER, "TODAY", COLOR_OFF);
+
+        it.printf(panel_x_mid, 50, id(text_med), COLOR_ON, TextAlign::CENTER, "%2.0f°C", id(weather_current_temp).state, COLOR_OFF);
+        it.printf(panel_x_mid, 80, id(text_med), COLOR_ON, TextAlign::CENTER, "%2.0f%", id(weather_current_humidity).state, COLOR_OFF);
+        it.printf(panel_x_mid, 110, id(text_med), COLOR_ON, TextAlign::CENTER, "%2.0fhPa", id(weather_current_pressure).state, COLOR_OFF);                
       }
