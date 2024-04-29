@@ -44,7 +44,7 @@
         condition_now: >
           {% set cond_now = states('weather.forecast_home') %}
           {% if states('sun.sun') == 'below_horizon' %}
-              {% if cond_now == 'sunny' %} night {% elif cond_now == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond_now }} {% endif %}
+              {% if cond_now == 'sunny' %} clear-night {% elif cond_now == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond_now }} {% endif %}
           {% else %}
               {{ cond_now }}
           {% endif %}
@@ -58,7 +58,7 @@
           {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
           {% set cond0_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) %}
           {% if cond0_time < next_rising and next_rising < next_setting %}
-              {% if cond0 == 'sunny' %} night {% elif cond0 == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond0 }} {% endif %}
+              {% if cond0 == 'sunny' %} clear-night {% elif cond0 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond0 }} {% endif %}
           {% else %}
               {{ cond0 }}
           {% endif %}
@@ -75,7 +75,7 @@
           {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
           {% set cond1_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) %}
           {% if cond1_time < next_rising and next_rising < next_setting %}
-              {% if cond1 == 'sunny' %} night {% elif cond1 == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond1 }} {% endif %}
+              {% if cond1 == 'sunny' %} clear-night {% elif cond1 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond1 }} {% endif %}
           {% else %}
               {{ cond1 }}
           {% endif %}
@@ -92,7 +92,7 @@
           {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
           {% set cond2_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) %}
           {% if cond2_time < next_rising and next_rising < next_setting %}
-              {% if cond2 == 'sunny' %} night {% elif cond2 == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond2 }} {% endif %}
+              {% if cond2 == 'sunny' %} clear-night {% elif cond2 == 'partlycloudy' %} partlycloudy-nighty {% else %} {{ cond2 }} {% endif %}
           {% else %}
               {{ cond2 }}
           {% endif %}
@@ -109,7 +109,7 @@
           {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
           {% set cond3_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) %}
           {% if cond3_time < next_rising and next_rising < next_setting %}
-              {% if cond3 == 'sunny' %} night {% elif cond3 == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond3 }} {% endif %}
+              {% if cond3 == 'sunny' %} clear-night {% elif cond3 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond3 }} {% endif %}
           {% else %}
               {{ cond3 }}
           {% endif %}
@@ -126,7 +126,7 @@
           {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
           {% set cond4_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) %}
           {% if cond4_time < next_rising and next_rising < next_setting %}
-              {% if cond4 == 'sunny' %} night {% elif cond4 == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond4 }} {% endif %}
+              {% if cond4 == 'sunny' %} clear-night {% elif cond4 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond4 }} {% endif %}
           {% else %}
               {{ cond4 }}
           {% endif %}
@@ -154,7 +154,7 @@
         condition_now: >
           {% set cond_now = states('weather.forecast_home') %}
           {% if states('sun.sun') == 'below_horizon' %}
-              {% if cond_now == 'sunny' %} night {% elif cond_now == 'partlycloudy' %} night-partly-cloudy {% else %} {{ cond_now }} {% endif %}
+              {% if cond_now == 'sunny' %} clear-night {% elif cond_now == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond_now }} {% endif %}
           {% else %}
               {{ cond_now }}
           {% endif %}
@@ -165,7 +165,7 @@
         condition0: "{{ forecast_daily['weather.forecast_home'].forecast[0].condition }}"
         temperature0: "{{ forecast_daily['weather.forecast_home'].forecast[0].temperature }}"
         templow0: "{{ forecast_daily['weather.forecast_home'].forecast[0].templow }}"
-        humidity: "{{ forecast_daily['weather.forecast_home'].forecast[0].humidity }}"
+        humidity0: "{{ forecast_daily['weather.forecast_home'].forecast[0].humidity }}"
         wind_speed0: "{{ forecast_daily['weather.forecast_home'].forecast[0].wind_speed }}"
         wind_bearing0: "{{ forecast_daily['weather.forecast_home'].forecast[0].wind_bearing }}"
         precipitation0: "{{ forecast_daily['weather.forecast_home'].forecast[0].precipitation }}"
@@ -175,7 +175,17 @@
         condition1: "{{ forecast_daily['weather.forecast_home'].forecast[1].condition }}"
         temperature1: "{{ forecast_daily['weather.forecast_home'].forecast[1].temperature }}"
         templow1: "{{ forecast_daily['weather.forecast_home'].forecast[1].templow }}"
-        humidity: "{{ forecast_daily['weather.forecast_home'].forecast[1].humidity }}"
+        humidity1: "{{ forecast_daily['weather.forecast_home'].forecast[1].humidity }}"
         wind_speed1: "{{ forecast_daily['weather.forecast_home'].forecast[1].wind_speed }}"
         wind_bearing1: "{{ forecast_daily['weather.forecast_home'].forecast[1].wind_bearing }}"
         precipitation1: "{{ forecast_daily['weather.forecast_home'].forecast[1].precipitation }}"
+
+        datetime2: "{{ forecast_daily['weather.forecast_home'].forecast[2].datetime }}"
+        shorttime2: "{{ as_timestamp(forecast_daily['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%A') }}"
+        condition2: "{{ forecast_daily['weather.forecast_home'].forecast[2].condition }}"
+        temperature2: "{{ forecast_daily['weather.forecast_home'].forecast[2].temperature }}"
+        templow2: "{{ forecast_daily['weather.forecast_home'].forecast[2].templow }}"
+        humidity2: "{{ forecast_daily['weather.forecast_home'].forecast[2].humidity }}"
+        wind_speed2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_speed }}"
+        wind_bearing2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_bearing }}"
+        precipitation2: "{{ forecast_daily['weather.forecast_home'].forecast[2].precipitation }}"
