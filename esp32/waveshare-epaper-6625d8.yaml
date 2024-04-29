@@ -125,6 +125,9 @@ time:
 
 # Check if motion is detected in the living room.
 binary_sensor:
+  - platform: status
+    name: "Status"
+
   - platform: homeassistant
     entity_id: binary_sensor.hallway_motion_motion
     id: hallway_motion_detected
@@ -328,24 +331,59 @@ font:
     id: time_small
     size: 10
     glyphs: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':']
+
   - file:
       type: gfonts
       family: Montserrat
       weight: 500
     id: text_small
     size: 20
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 500
+      glyphs: [ "'" ]
+
   - file:
       type: gfonts
       family: Montserrat
       weight: 500
     id: text_med
     size: 25
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 500
+      glyphs: [ "'" ]
+  
   - file:
       type: gfonts
       family: Montserrat
       weight: 500
     id: text_large
+    size: 30
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 500
+      glyphs: [ "'" ]
+
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 500
+    id: text_title
     size: 50
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 500
+      glyphs: [ "'" ]
+
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: icons_med
     size: 50
@@ -480,7 +518,7 @@ display:
       int weather_fourth_x = 330;
       int weather_fifth_x = 420;
 
-      int weather_time_y = 150;
+      int weather_time_y = 170;
       int weather_icon_y = weather_time_y + 50;
       int weather_cdtn_y = weather_icon_y + 50;
       int weather_temp_y = weather_cdtn_y + 30;
@@ -495,12 +533,12 @@ display:
         it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Header
-        it.printf(panel_x_mid, weather_header_y, id(text_large), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
-        it.printf(panel_x_mid, weather_header_y2, id(text_med), COLOR_ON, TextAlign::CENTER, "It\'s %s", id(long_date).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, weather_header_y, id(text_title), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, weather_header_y2, id(text_large), COLOR_ON, TextAlign::CENTER, "It's %s", id(long_date).state.c_str(), COLOR_OFF);
 
-        //it.printf(weather_fourth_x, weather_header_y, id(icons_med), COLOR_ON, TextAlign::CENTER, "%s", weather_icon_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
-        //it.printf(weather_fifth_x, weather_header_y, id(text_small), COLOR_ON, TextAlign::CENTER, "%s", weather_name_map[id(weather_current).state.c_str()].c_str(), COLOR_OFF);
-        //it.printf(weather_fifth_x, weather_header_y2, id(text_small), COLOR_ON, TextAlign::CENTER, "%2.0f°C", id(weather_current_temp).state, COLOR_OFF);
+        it.line(20, 100, panel_x - 20, 100);
+
+        it.printf(panel_x_mid, 130 , id(text_large), COLOR_ON, TextAlign::CENTER, "Today's Weather Is", COLOR_OFF);
 
         // Weather Forecast
         it.printf(weather_first_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
