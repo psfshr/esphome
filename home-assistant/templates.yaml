@@ -2,10 +2,32 @@
 # template: !include templates.yaml
 # Note: Can only have one template include though
 
+
+################################################################################
+# SMARTFRAME TRIGGERS ##########################################################
+################################################################################
+
+# waveshare-epaper-6625d8
+- binary_sensor:
+    - name: Waveshare ePaper 6625d8 Trigger
+      unique_id: "waveshare-epaper-6625d8-trigger"
+      delay_off: 1min
+      state: >-
+        {%- if states('binary_sensor.hallway_motion_motion') == 'on' %}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+
+
+################################################################################
+# SMARTFRAME WEATHER ###########################################################
+################################################################################
+
 - trigger:
     - platform: time_pattern
       hours: /1
-      #minutes: /11
+      #minutes: /10
   sensor:
     - name: TimeOfDay Greeting
       unique_id: timeofday_greeting
@@ -189,3 +211,7 @@
         wind_speed2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_speed }}"
         wind_bearing2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_bearing }}"
         precipitation2: "{{ forecast_daily['weather.forecast_home'].forecast[2].precipitation }}"
+
+################################################################################
+################################################################################
+################################################################################

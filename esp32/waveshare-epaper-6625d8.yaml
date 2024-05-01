@@ -13,7 +13,7 @@ esphome:
         - wait_until:
             condition:
               lambda: 'return id(data_updated) == true;'
-              # Wait a bit longer so all the items are received
+          # Wait a bit longer so all the items are received
         - delay: 5s
         - logger.log: "Initial sensor data received: Refreshing display..."
         - lambda: 'id(initial_data_received) = true;'
@@ -67,8 +67,7 @@ button:
     on_press:
       - script.execute: update_screen
       
-      
-# Global variables for detecting if the display needs to be refreshed. (Thanks @paviro!)
+# Global variables for detecting if the display needs to be refreshed
 globals:
   - id: data_updated
     type: bool
@@ -83,8 +82,7 @@ globals:
     restore_value: yes
     initial_value: '0'
 
-
-# Script for updating screen - Refresh display and publish refresh count and time. (Thanks @paviro!)
+# Script for updating screen - Refresh display and publish refresh count and time.
 script:
   - id: update_screen
     then:
@@ -92,10 +90,8 @@ script:
       - component.update: eink_display
       - lambda: 'id(recorded_display_refresh) += 1;'
       - lambda: 'id(display_last_update).publish_state(id(homeassistant_time).now().timestamp);'
-      
 
-# Check whether the display needs to be refreshed every minute,
-# based on whether new data is received or motion is detected. (Thanks @paviro!)
+# Check whether the display needs to be refreshed every minute, based on whether new data is received and trigger is active
 time:
   - platform: homeassistant
     id: homeassistant_time
@@ -109,9 +105,9 @@ time:
               then:
                 - if:
                     condition:
-                      binary_sensor.is_on: hallway_motion_detected
+                      binary_sensor.is_on: waveshare_epaper_6625d8_trigger
                     then:
-                      - logger.log: "Sensor data updated and activity in home detected: Refreshing display..."
+                      - logger.log: "Sensor data updated and activity in home detected - refreshing display..."
                       - script.execute: update_screen
                     else:
                       - logger.log: "Sensor data updated but no activity in home - skipping display refresh."
@@ -129,8 +125,8 @@ binary_sensor:
     name: "Status"
 
   - platform: homeassistant
-    entity_id: binary_sensor.hallway_motion_motion
-    id: hallway_motion_detected
+    entity_id: binary_sensor.waveshare_epaper_6625d8_trigger
+    id: waveshare_epaper_6625d8_trigger
 
 text_sensor:
   - platform: homeassistant
@@ -329,7 +325,7 @@ font:
       family: Montserrat
       weight: 500
     id: time_small
-    size: 10
+    size: 15
     glyphs: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':']
 
   - file:
@@ -426,6 +422,8 @@ display:
     update_interval: never
     rotation: 90°
     lambda: |-
+      // https://stackoverflow.com/questions/4479017/storing-std-map-in-map
+
       std::map<std::string, std::string> weather_icon_map
       {
         {"clear-night", "\U000F0594"},
@@ -468,63 +466,63 @@ display:
         {"", "\U000F02D6"},
       };
 
-      int weather_header_x = 20;
-      int weather_header_y = 30;
-      int weather_header_y2 = 70;
-
-      int weather_first_x = 60;
-      int weather_second_x = 150;
-      int weather_third_x = 240;
-      int weather_fourth_x = 330;
-      int weather_fifth_x = 420;
-
-      int weather_time_y = 170;
-      int weather_icon_y = weather_time_y + 50;
-      int weather_cdtn_y = weather_icon_y + 50;
-      int weather_temp_y = weather_cdtn_y + 30;
-
       int panel_x = it.get_width();
       int panel_y = it.get_height();
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
+
+      int forecast_first_x = 60;
+      int forecast_second_x = 150;
+      int forecast_third_x = 240;
+      int forecast_fourth_x = 330;
+      int forecast_fifth_x = 420;
+
+      int header_title_y = 30;
+      int header_date_y = header_title_y + 60;
+      int forecast_divider_y = header_date_y + 30;
+      int forecast_title_y = forecast_divider_y + 30;
+      int forecast_time_y = forecast_title_y + 50;
+      int forecast_icon_y = forecast_time_y + 50;
+      int forecast_cdtn_y = forecast_icon_y + 50;
+      int forecast_temp_y = forecast_cdtn_y + 30;
 
       // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
         it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Header
-        it.printf(panel_x_mid, weather_header_y, id(text_title), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
-        it.printf(panel_x_mid, weather_header_y2, id(text_large), COLOR_ON, TextAlign::CENTER, "It's %s", id(long_date).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, header_title_y, id(text_title), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(panel_x_mid, header_date_y, id(text_large), COLOR_ON, TextAlign::CENTER, "It's %s", id(long_date).state.c_str(), COLOR_OFF);
 
-        it.line(20, 100, panel_x - 20, 100);
-
-        it.printf(panel_x_mid, 130 , id(text_large), COLOR_ON, TextAlign::CENTER, "Today's Weather Is", COLOR_OFF);
+        it.line(20, forecast_divider_y, panel_x - 20, forecast_divider_y);
 
         // Weather Forecast
-        it.printf(weather_first_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
-        it.printf(weather_first_x, weather_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
-        it.printf(weather_first_x, weather_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition0).state.c_str()].c_str());
-        it.printf(weather_first_x, weather_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature0).state);
+        it.printf(panel_x_mid, forecast_title_y , id(text_large), COLOR_ON, TextAlign::CENTER, "Today's Weather Is", COLOR_OFF);
 
-        it.printf(weather_second_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime1).state.c_str());
-        it.printf(weather_second_x, weather_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition1).state.c_str()].c_str());
-        it.printf(weather_second_x, weather_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition1).state.c_str()].c_str());
-        it.printf(weather_second_x, weather_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature1).state);
+        it.printf(forecast_first_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
+        it.printf(forecast_first_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
+        it.printf(forecast_first_x, forecast_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition0).state.c_str()].c_str());
+        it.printf(forecast_first_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature0).state);
 
-        it.printf(weather_third_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime2).state.c_str());
-        it.printf(weather_third_x, weather_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition2).state.c_str()].c_str());
-        it.printf(weather_third_x, weather_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition2).state.c_str()].c_str());
-        it.printf(weather_third_x, weather_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature2).state);
+        it.printf(forecast_second_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime1).state.c_str());
+        it.printf(forecast_second_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition1).state.c_str()].c_str());
+        it.printf(forecast_second_x, forecast_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition1).state.c_str()].c_str());
+        it.printf(forecast_second_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature1).state);
 
-        it.printf(weather_fourth_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime3).state.c_str());
-        it.printf(weather_fourth_x, weather_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition3).state.c_str()].c_str());
-        it.printf(weather_fourth_x, weather_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition3).state.c_str()].c_str());
-        it.printf(weather_fourth_x, weather_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature3).state);
+        it.printf(forecast_third_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime2).state.c_str());
+        it.printf(forecast_third_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition2).state.c_str()].c_str());
+        it.printf(forecast_third_x, forecast_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition2).state.c_str()].c_str());
+        it.printf(forecast_third_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature2).state);
 
-        it.printf(weather_fifth_x, weather_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime4).state.c_str());
-        it.printf(weather_fifth_x, weather_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
-        it.printf(weather_fifth_x, weather_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition4).state.c_str()].c_str());
-        it.printf(weather_fifth_x, weather_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
+        it.printf(forecast_fourth_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime3).state.c_str());
+        it.printf(forecast_fourth_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition3).state.c_str()].c_str());
+        it.printf(forecast_fourth_x, forecast_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition3).state.c_str()].c_str());
+        it.printf(forecast_fourth_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature3).state);
+
+        it.printf(forecast_fifth_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime4).state.c_str());
+        it.printf(forecast_fifth_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
+        it.printf(forecast_fifth_x, forecast_cdtn_y, id(text_small), TextAlign::CENTER, "%s", weather_name_map[id(hourly_forecast_condition4).state.c_str()].c_str());
+        it.printf(forecast_fifth_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
         // Refresh Timestamp
         // Code by EnsconcE from https://community.home-assistant.io/t/esphome-show-time/348903
