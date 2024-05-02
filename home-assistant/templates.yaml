@@ -11,7 +11,7 @@
 - binary_sensor:
     - name: Waveshare ePaper 6625d8 Trigger
       unique_id: "waveshare-epaper-6625d8-trigger"
-      delay_off: 1min
+      delay_off: 00:01:00
       state: >-
         {%- if states('binary_sensor.hallway_motion_motion') == 'on' %}
           on
