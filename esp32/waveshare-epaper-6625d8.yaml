@@ -56,6 +56,13 @@ captive_portal:
 ###############################################################################
 ###############################################################################
 
+output:
+  - platform: gpio
+    pin:
+      number: GPIO2
+      mode: output
+    id: LED
+
 button:
   - platform: shutdown
     name: "Shutdown"
@@ -99,6 +106,9 @@ time:
       - seconds: 0
         minutes: /1
         then:
+          - output.turn_on: LED
+          - delay: 250ms
+          - output.turn_off: LED
           - if:
               condition:
                 lambda: 'return id(data_updated) == true;'
