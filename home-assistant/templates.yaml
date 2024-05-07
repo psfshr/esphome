@@ -34,17 +34,14 @@
       state: >
         {% set state = states('sensor.time') %}
         {% if '06:00' <= state < '12:00' %}
-        Good Morning!
+        Morning
         {% elif '12:00' <= state < '18:00' %}
-        Good Afternoon!
+        Afternoon
         {% elif '18:00' <= state < '22:00' %}
-        Good Evening!
+        Evening
         {% else %}
-        Good Night!
+        Night
         {% endif %}
-    - name: Long Date
-      unique_id: long_date
-      state: "{{ now().timestamp() | timestamp_custom('%A %-d %B %Y') }}"
 
 - trigger:
     - platform: time_pattern

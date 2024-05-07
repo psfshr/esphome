@@ -31,6 +31,7 @@ spi:
 
 # Enable logging
 logger:
+#  level: VERBOSE #DEBUG #VERBOSE
 
 # Enable Home Assistant API
 api:
@@ -430,7 +431,7 @@ display:
     reset_duration: 2ms
     model: 7.50inV2
     update_interval: never
-    rotation: 90°
+    #rotation: 90°
     lambda: |-
       // https://stackoverflow.com/questions/4479017/storing-std-map-in-map
 
@@ -475,39 +476,62 @@ display:
         {"partlycloudy-night", "Cloudy"},
         {"", "\U000F02D6"},
       };
-
+      // Panel
       int panel_x = it.get_width();
       int panel_y = it.get_height();
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
 
+      // Title TOP_LEFT
+      int header_title_x = 10;
+      int header_title_y = 0;
+
+      // Date TOP_RIGHT
+      int header_date_x = panel_x - 10;
+      int header_date_y = 0;
+      int header_date2_y = 40;
+
+      // Divider
+      int forecast_divider_x = 10;
+      int forecast_divider_y = header_title_y + 70;
+
+      // Forecast
       int forecast_first_x = 60;
       int forecast_second_x = 150;
       int forecast_third_x = 240;
       int forecast_fourth_x = 330;
       int forecast_fifth_x = 420;
 
-      int header_title_y = 30;
-      int header_date_y = header_title_y + 60;
-      int forecast_divider_y = header_date_y + 30;
       int forecast_title_y = forecast_divider_y + 30;
       int forecast_time_y = forecast_title_y + 50;
       int forecast_icon_y = forecast_time_y + 50;
       int forecast_cdtn_y = forecast_icon_y + 50;
       int forecast_temp_y = forecast_cdtn_y + 30;
 
+      //ESP_LOGD("custom", id(homeassistant_time).now().strftime("%A %e %B %Y").c_str());
+      // Levels:
+      //  - ERROR: ESP_LOGE
+      //  - WARNING: ESP_LOGW
+      //  - INFO: ESP_LOGI
+      //  - DEBUG: ESP_LOGD
+      //  - VERBOSE: ESP_LOGV
+      //  - VERY_VERBOSE: ESP_LOGVV
+
+
       // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
         it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Header
-        it.printf(panel_x_mid, header_title_y, id(text_title), COLOR_ON, TextAlign::CENTER, "%s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
-        it.printf(panel_x_mid, header_date_y, id(text_large), COLOR_ON, TextAlign::CENTER, "It's %s", id(long_date).state.c_str(), COLOR_OFF);
+        it.printf(header_title_x, header_title_y, id(text_title), COLOR_ON, TextAlign::TOP_LEFT, "Good %s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
 
-        it.line(20, forecast_divider_y, panel_x - 20, forecast_divider_y);
+        it.strftime(header_date_x, header_date_y, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
+        it.strftime(header_date_x, header_date2_y, id(text_large), TextAlign::TOP_RIGHT, "%e %B %Y", id(homeassistant_time).now());
+
+        it.line(forecast_divider_x, forecast_divider_y, panel_x - forecast_divider_x, forecast_divider_y);
 
         // Weather Forecast
-        it.printf(panel_x_mid, forecast_title_y , id(text_large), COLOR_ON, TextAlign::CENTER, "Today's Weather Is", COLOR_OFF);
+        //it.printf(panel_x_mid, forecast_title_y , id(text_large), COLOR_ON, TextAlign::CENTER, "Today's Weather Is", COLOR_OFF);
 
         it.printf(forecast_first_x, forecast_time_y, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
         it.printf(forecast_first_x, forecast_icon_y, id(icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
@@ -535,9 +559,5 @@ display:
         it.printf(forecast_fifth_x, forecast_temp_y, id(text_small), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
         // Refresh Timestamp
-        // Code by EnsconcE from https://community.home-assistant.io/t/esphome-show-time/348903
-        char str[17];
-        time_t currTime = id(homeassistant_time).now().timestamp;
-        strftime(str, sizeof(str), "%H:%M", localtime(&currTime));
-        it.printf(470, 790, id(time_small), TextAlign::BOTTOM_RIGHT, "%s", str);
+        it.strftime(panel_x - 10, panel_y - 10, id(time_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
       }
