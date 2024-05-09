@@ -1,6 +1,6 @@
 substitutions:
   name: waveshare-epaper-6625d8
-  friendly_name: Study SmartFrame (Test)
+  friendly_name: Study SmartFrame 6625d8
 
 esphome:
   name: ${name}
@@ -512,7 +512,7 @@ display:
 
       // Title CENTER_LEFT
       int header_title_x = 15;
-      int header_title_y = 40;
+      int header_title_y = 35;
 
       // Date TOP_RIGHT
       int header_date_x = panel_x - 15;
