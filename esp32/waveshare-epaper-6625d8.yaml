@@ -148,33 +148,18 @@ text_sensor:
         - lambda: 'id(data_updated) = true;'  
 
   - platform: homeassistant
-    entity_id: sensor.long_date
-    id: long_date
+    entity_id: weather.forecast_home
+    id: weather_current
     on_value:
       then:
-        - lambda: 'id(data_updated) = true;'    
+        - lambda: 'id(data_updated) = true;'
 
+###############################################################################
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
     attribute: shorttime0
     id: hourly_forecast_shorttime0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: datetime0
-    id: hourly_forecast_datetime0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: condition0
-    id: hourly_forecast_condition0
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -189,40 +174,8 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
-    attribute: datetime1
-    id: hourly_forecast_datetime1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: condition1
-    id: hourly_forecast_condition1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
     attribute: shorttime2
     id: hourly_forecast_shorttime2
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: datetime2
-    id: hourly_forecast_datetime2
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: condition2
-    id: hourly_forecast_condition2
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -237,8 +190,76 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
+    attribute: shorttime4
+    id: hourly_forecast_shorttime4
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+###############################################################################
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: datetime0
+    id: hourly_forecast_datetime0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: datetime1
+    id: hourly_forecast_datetime1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: datetime2
+    id: hourly_forecast_datetime2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
     attribute: datetime3
     id: hourly_forecast_datetime3
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: datetime4
+    id: hourly_forecast_datetime4
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+###############################################################################
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition0
+    id: hourly_forecast_condition0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition1
+    id: hourly_forecast_condition1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_hourly
+    attribute: condition2
+    id: hourly_forecast_condition2
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -253,34 +274,13 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
-    attribute: shorttime4
-    id: hourly_forecast_shorttime4
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
-    attribute: datetime4
-    id: hourly_forecast_datetime4
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_hourly
     attribute: condition4
     id: hourly_forecast_condition4
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: weather.forecast_home
-    id: weather_current
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+###############################################################################
 
 sensor:
   - platform: homeassistant
@@ -323,6 +323,8 @@ sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+###############################################################################
+
   - platform: homeassistant
     entity_id: sensor.front_garden_climate_temperature 
     id: weather_current_temp
@@ -343,6 +345,8 @@ sensor:
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
+
+###############################################################################
 
   # Create sensors for monitoring SmartFrame remotely.
   - platform: template
@@ -458,6 +462,9 @@ font:
     size: 75
     glyphs: *mdi-weather-glyphs
 
+###############################################################################
+###############################################################################
+###############################################################################
 
 # Now render everything on the ePaper screen (480x800)
 display:
@@ -503,9 +510,9 @@ display:
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
 
-      // Title TOP_LEFT
+      // Title CENTER_LEFT
       int header_title_x = 15;
-      int header_title_y = 0;
+      int header_title_y = 40;
 
       // Date TOP_RIGHT
       int header_date_x = panel_x - 15;
@@ -559,7 +566,7 @@ display:
         it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Top Panel - Header
-        it.printf(header_title_x, header_title_y, id(text_title), COLOR_ON, TextAlign::TOP_LEFT, "Good %s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(header_title_x, header_title_y, id(text_title), COLOR_ON, TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
 
         it.strftime(header_date_x, header_date_y, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
         it.strftime(header_date_x, header_date2_y, id(text_large), TextAlign::TOP_RIGHT, "%e %B %Y", id(homeassistant_time).now());

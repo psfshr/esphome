@@ -1,0 +1,145 @@
+# Include in configuration.yaml via package include
+# pack_1: !include pack_waveshare_epaper_6625d8.yaml
+
+template:
+  ################################################################################
+  # SMARTFRAME TRIGGERS ##########################################################
+  ################################################################################
+
+  # waveshare-epaper-6625d8
+  - binary_sensor:
+      - name: Waveshare ePaper 6625d8 Trigger
+        unique_id: "waveshare-epaper-6625d8-trigger"
+        delay_off: 00:01:00
+        state: >-
+          {%- if states('binary_sensor.hallway_motion_motion') == 'on' %}
+            on
+          {%- else -%}
+            off
+          {%- endif -%}
+
+  ################################################################################
+  # SMARTFRAME MISC ##############################################################
+  ################################################################################
+
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+        #minutes: /10
+    sensor:
+      - name: TimeOfDay Greeting
+        unique_id: timeofday_greeting
+        state: >
+          {% set state = states('sensor.time') %}
+          {% if '06:00' <= state < '12:00' %}
+          Morning
+          {% elif '12:00' <= state < '18:00' %}
+          Afternoon
+          {% elif '18:00' <= state < '22:00' %}
+          Evening
+          {% else %}
+          Night
+          {% endif %}
+
+  ################################################################################
+  # SMARTFRAME WEATHER ###########################################################
+  ################################################################################
+
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+        #minutes: /10
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: hourly
+        target:
+          entity_id:
+            - weather.forecast_home
+        response_variable: forecast_hourly
+    sensor:
+      - name: Weather Forecast Hourly
+        unique_id: weather_forecast_hourly
+        state: "{{ states('weather.forecast_home') }}"
+        attributes:
+          condition_now: >
+            {% set cond_now = states('weather.forecast_home') %}
+            {% if states('sun.sun') == 'below_horizon' %}
+                {% if cond_now == 'sunny' %} clear-night {% elif cond_now == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond_now }} {% endif %}
+            {% else %}
+                {{ cond_now }}
+            {% endif %}
+
+          datetime0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].datetime }}"
+          shorttime0: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) | timestamp_custom('%p') }}"
+          condition0: >
+            {% set cond0 = forecast_hourly['weather.forecast_home'].forecast[0].condition %}
+            {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+            {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
+            {% set cond0_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) %}
+            {% if cond0_time < next_rising and next_rising < next_setting %}
+                {% if cond0 == 'sunny' %} clear-night {% elif cond0 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond0 }} {% endif %}
+            {% else %}
+                {{ cond0 }}
+            {% endif %}
+          temperature0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].temperature }}"
+
+          datetime1: "{{ forecast_hourly['weather.forecast_home'].forecast[1].datetime }}"
+          shorttime1: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%p') }}"
+          condition1: >
+            {% set cond1 = forecast_hourly['weather.forecast_home'].forecast[1].condition %}
+            {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+            {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
+            {% set cond1_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) %}
+            {% if cond1_time < next_rising and next_rising < next_setting %}
+                {% if cond1 == 'sunny' %} clear-night {% elif cond1 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond1 }} {% endif %}
+            {% else %}
+                {{ cond1 }}
+            {% endif %}
+          temperature1: "{{ forecast_hourly['weather.forecast_home'].forecast[1].temperature }}"
+
+          datetime2: "{{ forecast_hourly['weather.forecast_home'].forecast[2].datetime }}"
+          shorttime2: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%p') }}"
+          condition2: >
+            {% set cond2 = forecast_hourly['weather.forecast_home'].forecast[2].condition %}
+            {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+            {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
+            {% set cond2_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) %}
+            {% if cond2_time < next_rising and next_rising < next_setting %}
+                {% if cond2 == 'sunny' %} clear-night {% elif cond2 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond2 }} {% endif %}
+            {% else %}
+                {{ cond2 }}
+            {% endif %}
+          temperature2: "{{ forecast_hourly['weather.forecast_home'].forecast[2].temperature }}"
+
+          datetime3: "{{ forecast_hourly['weather.forecast_home'].forecast[3].datetime }}"
+          shorttime3: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%p') }}"
+          condition3: >
+            {% set cond3 = forecast_hourly['weather.forecast_home'].forecast[3].condition %}
+            {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+            {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
+            {% set cond3_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) %}
+            {% if cond3_time < next_rising and next_rising < next_setting %}
+                {% if cond3 == 'sunny' %} clear-night {% elif cond3 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond3 }} {% endif %}
+            {% else %}
+                {{ cond3 }}
+            {% endif %}
+          temperature3: "{{ forecast_hourly['weather.forecast_home'].forecast[3].temperature }}"
+
+          datetime4: "{{ forecast_hourly['weather.forecast_home'].forecast[4].datetime }}"
+          shorttime4: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%p') }}"
+          condition4: >
+            {% set cond4 = forecast_hourly['weather.forecast_home'].forecast[4].condition %}
+            {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
+            {% set next_rising = as_timestamp(state_attr('sun.sun', 'next_rising')) %}
+            {% set cond4_time = as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) %}
+            {% if cond4_time < next_rising and next_rising < next_setting %}
+                {% if cond4 == 'sunny' %} clear-night {% elif cond4 == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond4 }} {% endif %}
+            {% else %}
+                {{ cond4 }}
+            {% endif %}
+          temperature4: "{{ forecast_hourly['weather.forecast_home'].forecast[4].temperature }}"
+
+################################################################################
+################################################################################
+################################################################################
