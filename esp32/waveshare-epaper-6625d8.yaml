@@ -389,16 +389,8 @@ font:
       type: gfonts
       family: Montserrat
       weight: 500
-    id: time_small
-    size: 15
-    glyphs: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':']
-
-  - file:
-      type: gfonts
-      family: Montserrat
-      weight: 500
     id: text_small
-    size: 20
+    size: 15
     extras:
       file:
         type: gfonts
@@ -549,13 +541,7 @@ display:
       int forecast_fourth_y = forecast_third_y + 50;
       int forecast_fifth_y = forecast_fourth_y + 50;
 
-      // Footer
-      int footer1_x = 20;
-      int footer1_y = panel_y - 60;
-      const char* footer1_text = "Give me the Serenity to accept the things I cannot change, the Courage";
-      int footer2_x = 30;
-      int footer2_y = panel_y - 30;
-      const char* footer2_text = " to change the things I can, and the Wisdom to know the difference";
+      // Left Panel
 
       //ESP_LOGD("custom", id(homeassistant_time).now().strftime("%A %e %B %Y").c_str());
       // Levels:
@@ -580,6 +566,7 @@ display:
         it.line(horizontal_divider1_x, horizontal_divider1_y, panel_x - horizontal_divider1_x, horizontal_divider1_y);
 
         // Left Panel - ???
+
 
         it.line(vertical_divider_x, vertical_divider_y, vertical_divider_x, vertical_divider_y2);
 
@@ -609,9 +596,7 @@ display:
         it.line(horizontal_divider2_x, horizontal_divider2_y, panel_x - horizontal_divider2_x, horizontal_divider2_y);
 
         // Bottom Panel - ???
-        it.printf(footer1_x, footer1_y , id(text_small), COLOR_ON, TextAlign::CENTER_LEFT, footer1_text, COLOR_OFF);
-        it.printf(footer2_x, footer2_y , id(text_small), COLOR_ON, TextAlign::CENTER_LEFT, footer2_text, COLOR_OFF);
 
         // Refresh Timestamp
-        it.strftime(panel_x - 10, panel_y - 10, id(time_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
+        it.strftime(panel_x - 10, panel_y - 10, id(text_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
       }
