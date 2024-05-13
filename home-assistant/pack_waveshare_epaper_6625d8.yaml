@@ -12,7 +12,7 @@ template:
         unique_id: "waveshare-epaper-6625d8-trigger"
         delay_off: 00:01:00
         state: >-
-          {%- if states('binary_sensor.hallway_motion_motion') == 'on' %}
+          {%- if states('binary_sensor.study_motion_motion') == 'on' %}
             on
           {%- else -%}
             off
