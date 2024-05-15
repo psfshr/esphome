@@ -600,3 +600,5 @@ display:
         // Refresh Timestamp
         it.strftime(panel_x - 10, panel_y - 10, id(text_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
       }
+
+###############################################################################
