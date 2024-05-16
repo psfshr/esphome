@@ -1,4 +1,35 @@
 ###############################################################################
+# NOTES #######################################################################
+###############################################################################
+
+# https://www.waveshare.com/wiki/ESP32-S3-Zero
+# https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf
+
+# https://esphome.io/components/i2c
+# https://esphome.io/components/uart
+
+# https://esphome.io/components/sensor/tof10120
+
+# https://www.electroniclinic.com/wp-content/uploads/2020/11/TOF10120-Datasheet.pdf
+# RangeFinder supports both the UART and the I2C communication
+# Pin number1 black is the ground.
+# Pin number2 red is the VDD.
+# Pin number3 yellow is the RXD.
+# Pin number4 white is the TXD.
+# Pin number5 blue is the SDA
+# Pin number6 green is the SCL.
+# Out of the 6 pins of the TOF10120 I will use only 4 pins. GND, VDD, SDA, and SCL.
+
+# As per the datasheet the I2C address of the TOF10120 is 0xA4.
+# But i2c addressing uses the high 7 bits so it’s 0x52 which is equivalent to 82.
+# You can also find the I2C address of the TOF10120 by using the I2C Scanner code which is available below in the programming section.
+
+
+# https://esphome.io/components/sensor/ld2420
+
+
+
+###############################################################################
 # BASE DEVICE CONFIG ##########################################################
 ###############################################################################
 
@@ -35,16 +66,16 @@ psram:
   mode: quad
   speed: 80MHz
 
-# https://www.waveshare.com/wiki/ESP32-S3-Zero
-# https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf
-# https://esphome.io/components/sensor/tof10120
-# https://esphome.io/components/i2c#i2c
-
 i2c:
-  sda: GPIO1
-  scl: GPIO2
+  sda: GPIO01
+  scl: GPIO02
   scan: true
   id: bus_a
+
+uart:
+  tx_pin: GPIO43
+  rx_pin: GPIO44
+  baud_rate: 115200
 
 ################################################################################
 
@@ -80,6 +111,8 @@ output:
       mode: output
     id: LED
 
+# ld2420:
+
 ###############################################################################
 # VARIABLES & SCRIPTS #########################################################
 ###############################################################################
@@ -101,6 +134,22 @@ time:
           - delay: 250ms
           - output.turn_off: LED
 
+# number:
+#   - platform: ld2420
+#     presence_timeout:
+#       name: Detection Presence Timeout
+#     min_gate_distance:
+#       name: Detection Gate Minimum
+#     max_gate_distance:
+#       name: Detection Gate Maximum
+#     # See "Number" section below for detail
+#     gate_select:
+#       name: Select Gate to Set
+#     still_threshold:
+#       name: Set Still Threshold Value
+#     move_threshold:
+#       name: Set Move Threshold Value
+
 
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
@@ -117,6 +166,22 @@ button:
     name: "Factory Reset ESP"
     id: factory_reset_all
 
+  # - platform: ld2420
+  #   apply_config:
+  #     name: Apply Config
+  #   factory_reset:
+  #     name: Factory Reset
+  #   restart_module:
+  #     name: Restart Module
+  #   revert_config:
+  #     name: Undo Edits
+
+# select:
+#   - platform: ld2420
+#     operating_mode:
+#       name: Operating Mode
+
+
 ###############################################################################
 # SENSORS #####################################################################
 ###############################################################################
@@ -129,33 +194,25 @@ binary_sensor:
     name: "TOF Mid"
     id: tof_mid
 
+  # - platform: ld2420
+  #   has_target:
+  #     name: Presence
+
 ###############################################################################
 
-#text_sensor:
+# text_sensor:
+#   - platform: ld2420
+#     fw_version:
+#       name: LD2420 Firmware
 
 ###############################################################################
-
-# https://www.electroniclinic.com/wp-content/uploads/2020/11/TOF10120-Datasheet.pdf
-# RangeFinder supports both the UART and the I2C communication
-# Pin number1 is the ground.
-# Pin number2 is the VDD.
-# Pin number3 is the RXD.
-# Pin number4 is the TXD.
-# Pin number 5 is the SDA
-# Pin number6 is the SCL.
-# Out of the 6 pins of the TOF10120 I will use only 4 pins. GND, VDD, SDA, and SCL.
-
-# TOF10120 I2C Address:
-# As per the datasheet the I2C address of the TOF10120 is 0xA4.
-# But i2c addressing uses the high 7 bits so it’s 0x52 which is equivalent to 82.
-# You can also find the I2C address of the TOF10120 by using the I2C Scanner code which is available below in the programming section.
 
 sensor:
   # - platform: tof10120
   #   name: "TOF10120 Distance"
   #   update_interval: 5s
   #   on_value_range:
-  #     - below: 200.0
+  #     - below: 0.2
   #       then:
   #         - binary_sensor.template.publish:
   #             id: tof_near
@@ -163,8 +220,8 @@ sensor:
   #         - binary_sensor.template.publish:
   #             id: tof_mid
   #             state: OFF
-  #     - above: 200.0
-  #       below: 500.0
+  #     - above: 0.2
+  #       below: 0.5
   #       then:
   #         - binary_sensor.template.publish:
   #             id: tof_near
@@ -172,10 +229,44 @@ sensor:
   #         - binary_sensor.template.publish:
   #             id: tof_mid
   #             state: ON
-  #     - above: 500.0
+  #     - above: 0.5
   #       then:
- 
+  #         - binary_sensor.template.publish:
+  #             id: tof_near
+  #             state: OFF
+  #         - binary_sensor.template.publish:
+  #             id: tof_mid
+  #             state: OFF
 
+  # - platform: ld2420
+  #   moving_distance:
+  #     name : Moving Distance
+ #    on_value_range:
+  #     - below: 0.2
+  #       then:
+  #         - binary_sensor.template.publish:
+  #             id: tof_near
+  #             state: ON
+  #         - binary_sensor.template.publish:
+  #             id: tof_mid
+  #             state: OFF
+  #     - above: 0.2
+  #       below: 0.5
+  #       then:
+  #         - binary_sensor.template.publish:
+  #             id: tof_near
+  #             state: OFF
+  #         - binary_sensor.template.publish:
+  #             id: tof_mid
+  #             state: ON
+  #     - above: 0.5
+  #       then:
+  #         - binary_sensor.template.publish:
+  #             id: tof_near
+  #             state: OFF
+  #         - binary_sensor.template.publish:
+  #             id: tof_mid
+  #             state: OFF
 
     #Device UPTIME
   - platform: uptime
