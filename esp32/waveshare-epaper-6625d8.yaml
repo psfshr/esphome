@@ -164,8 +164,8 @@ text_sensor:
 
   # Weather Sensors
   - platform: homeassistant
-    entity_id: weather.forecast_home
-    id: weather_current
+    entity_id: sensor.weather_now
+    id: weather_now
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -316,26 +316,6 @@ sensor:
     update_interval: 60s
 
   # Home Assistant General Sensors
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_temperature 
-    id: weather_current_temp
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_humidity
-    id: weather_current_humidity
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-    
-  - platform: homeassistant
-    entity_id: sensor.front_garden_climate_pressure
-    id: weather_current_pressure
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
 
   # Weather Sensors
   - platform: homeassistant
@@ -518,15 +498,20 @@ display:
       int header_date2_y = 35;
 
       // Dividers
-      int horizontal_divider1_x = 15;
-      int horizontal_divider1_y = 80;
+      int horizontal_divider1_x1 = 15;
+      int horizontal_divider1_y1 = 80;
+      int horizontal_divider1_x2 = panel_x - 15;
+      int horizontal_divider1_y2 = 80;
 
-      int horizontal_divider2_x = 15;
-      int horizontal_divider2_y = panel_y - 80;
+      int vertical_divider_x1 = 550;
+      int vertical_divider_y1 = horizontal_divider1_y1 + 15;
+      int vertical_divider_x2 = 550;
+      int vertical_divider_y2 = panel_y - 15;
 
-      int vertical_divider_x = 550;
-      int vertical_divider_y = horizontal_divider1_y + 15;
-      int vertical_divider_y2 = horizontal_divider2_y - 15;
+      int horizontal_divider2_x1 = 15;
+      int horizontal_divider2_y1 = panel_y - 80;
+      int horizontal_divider2_x2 = 535;
+      int horizontal_divider2_y2 = panel_y - 80;
 
       // Forecast
       int forecast_title_x = 675; // CENTER
@@ -534,7 +519,7 @@ display:
       int forecast_icon_x = 675; // CENTER
       int forecast_temp_x = 710; // CENTER_LEFT
 
-      int forecast_title_y = horizontal_divider1_y + 30;
+      int forecast_title_y = 180;
       int forecast_first_y = forecast_title_y + 50;
       int forecast_second_y = forecast_first_y + 50;
       int forecast_third_y = forecast_second_y + 50;
@@ -563,15 +548,15 @@ display:
         it.strftime(header_date_x, header_date_y, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
         it.strftime(header_date_x, header_date2_y, id(text_large), TextAlign::TOP_RIGHT, "%e %B %Y", id(homeassistant_time).now());
 
-        it.line(horizontal_divider1_x, horizontal_divider1_y, panel_x - horizontal_divider1_x, horizontal_divider1_y);
+        it.line(horizontal_divider1_x1, horizontal_divider1_y1, horizontal_divider1_x2, horizontal_divider1_y2);
 
         // Left Panel - ???
 
 
-        it.line(vertical_divider_x, vertical_divider_y, vertical_divider_x, vertical_divider_y2);
+        it.line(vertical_divider_x1, vertical_divider_y1, vertical_divider_x2, vertical_divider_y2);
 
         // Right Panel - Weather Forecast
-        it.printf(forecast_title_x, forecast_title_y , id(text_med), COLOR_ON, TextAlign::CENTER, "Weather Today", COLOR_OFF);
+        //it.printf(forecast_title_x, forecast_title_y , id(text_med), COLOR_ON, TextAlign::CENTER, "Weather Today", COLOR_OFF);
 
         it.printf(forecast_time_x, forecast_first_y, id(text_med), TextAlign::CENTER_RIGHT, "%s", id(hourly_forecast_shorttime0).state.c_str());
         it.printf(forecast_icon_x, forecast_first_y, id(weather_icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
@@ -593,12 +578,12 @@ display:
         it.printf(forecast_icon_x, forecast_fifth_y, id(weather_icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
         it.printf(forecast_temp_x, forecast_fifth_y, id(text_med), TextAlign::CENTER_LEFT, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
-        it.line(horizontal_divider2_x, horizontal_divider2_y, panel_x - horizontal_divider2_x, horizontal_divider2_y);
+        it.line(horizontal_divider2_x1, horizontal_divider2_y1, horizontal_divider2_x2, horizontal_divider2_y2);
 
         // Bottom Panel - ???
 
         // Refresh Timestamp
-        it.strftime(panel_x - 10, panel_y - 10, id(text_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
+        it.strftime(10, panel_y - 10, id(text_small), TextAlign::BOTTOM_LEFT, "%H:%M", id(homeassistant_time).now());
       }
 
 ###############################################################################
