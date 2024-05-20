@@ -106,33 +106,35 @@ script:
       - lambda: 'id(recorded_display_refresh) += 1;'
       - lambda: 'id(display_last_update).publish_state(id(homeassistant_time).now().timestamp);'
 
-# Check whether the display needs to be refreshed every 1 minutes, based on whether new data is received and trigger is active
+# Check whether the display needs to be refreshed
 time:
   - platform: homeassistant
     id: homeassistant_time
+    on_time_sync:
+      then:
+        - logger.log: "Synchronized system clock"
     on_time:
       - seconds: 0
         minutes: /1
         then:
           - logger.log: "Ping!"
+          - logger.log:
+              format: "States are %s, %s, %u"
+              args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
           - output.turn_on: LED
           - delay: 250ms
           - output.turn_off: LED
           - if:
               condition:
-                lambda: 'return id(data_updated) == true;'
+                and:
+                  - lambda: 'return id(data_updated) == true;' # We have to have had new sensor data
+                  - lambda: 'return id(external_trigger) == true;' # We have to had had an external (presense) trigger
+                  - lambda: 'return id(time_since_refresh) >= 5;' # It has to have been at least 5 minutes since the last refresh
               then:
-                - if:
-                    condition:
-                      binary_sensor.is_on: waveshare_epaper_6625d8_trigger
-                    then:
-                      - logger.log: "Sensor data updated and activity in home detected - refreshing display..."
-                      - script.execute: update_screen
-                    else:
-                      - logger.log: "Sensor data updated but no activity in home - skipping display refresh."
-                      - lambda: 'id(time_since_refresh) += 1;'
+                - logger.log: "Refreshing display - Sensor data updated, activity detected, and past rate limit timer"
+                - script.execute: update_screen
               else:
-                - logger.log: "No sensors updated - skipping display refresh."
+                - logger.log: "Skipping display refresh - Either no sensor data updated, no activity in home, or not yet at rate limit timer"
                 - lambda: 'id(time_since_refresh) += 1;'
 
 ###############################################################################
@@ -309,6 +311,12 @@ text_sensor:
 ###############################################################################
 
 sensor:
+    #Device UPTIME
+  - platform: uptime
+    name: Uptime
+    id: sys_uptime
+    update_interval: 60s
+
   # Device Sensors - for monitoring device remotely
   - platform: template
     name: "Display Last Update"
@@ -334,6 +342,27 @@ sensor:
   # Home Assistant General Sensors
 
   # Weather Sensors
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_temperature
+    id: temperature_now
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_humidity
+    id: humidity_now
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.front_garden_climate_pressure
+    id: pressure_now
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
   - platform: homeassistant
     entity_id: sensor.weather_forecast_hourly
     attribute: temperature0
@@ -524,39 +553,32 @@ display:
       int vertical_divider_x2 = 550;
       int vertical_divider_y2 = panel_y - 15;
 
-      int horizontal_divider2_x1 = 15;
-      int horizontal_divider2_y1 = panel_y - 80;
-      int horizontal_divider2_x2 = 535;
-      int horizontal_divider2_y2 = panel_y - 80;
+      int horizontal_divider2_x1 = vertical_divider_x1 + 15;
+      int horizontal_divider2_y1 = 205;
+      int horizontal_divider2_x2 = panel_x - 15;
+      int horizontal_divider2_y2 = 205;
+
+      int horizontal_divider3_x1 = 15;
+      int horizontal_divider3_y1 = panel_y - 80;
+      int horizontal_divider3_x2 = 535;
+      int horizontal_divider3_y2 = panel_y - 80;
 
       // Forecast
-      int forecast_title_x = 675; // CENTER
+      int forecast_now_x = 675; // CENTER
       int forecast_time_x = 640; // CENTER_RIGHT
       int forecast_icon_x = 675; // CENTER
       int forecast_temp_x = 710; // CENTER_LEFT
 
-      int forecast_title_y = 180;
-      int forecast_first_y = forecast_title_y + 50;
+      int forecast_now_y = 100;
+      int forecast_first_y = horizontal_divider2_y1 + 25;
       int forecast_second_y = forecast_first_y + 50;
       int forecast_third_y = forecast_second_y + 50;
       int forecast_fourth_y = forecast_third_y + 50;
       int forecast_fifth_y = forecast_fourth_y + 50;
 
-      // Left Panel
-
-      //ESP_LOGD("custom", id(homeassistant_time).now().strftime("%A %e %B %Y").c_str());
-      // Levels:
-      //  - ERROR: ESP_LOGE
-      //  - WARNING: ESP_LOGW
-      //  - INFO: ESP_LOGI
-      //  - DEBUG: ESP_LOGD
-      //  - VERBOSE: ESP_LOGV
-      //  - VERY_VERBOSE: ESP_LOGVV
-
-
-      // Show loading screen before data is received.
       if (id(initial_data_received) == false) {
-        it.printf(panel_x_mid, panel_y_mid, id(text_small), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
+        // Show loading screen before data is received.
+        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
       } else {
         // Top Panel - Header
         it.printf(header_title_x, header_title_y, id(text_title), COLOR_ON, TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
@@ -568,11 +590,18 @@ display:
 
         // Left Panel - ???
 
-
         it.line(vertical_divider_x1, vertical_divider_y1, vertical_divider_x2, vertical_divider_y2);
 
         // Right Panel - Weather Forecast
-        //it.printf(forecast_title_x, forecast_title_y , id(text_med), COLOR_ON, TextAlign::CENTER, "Weather Today", COLOR_OFF);
+
+        //it.printf(forecast_now_x, forecast_first_y, id(weather_icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(weather_now).state.c_str()].c_str());
+
+        it.printf(forecast_now_x, forecast_now_y, id(text_small), TextAlign::CENTER, "%s", id(weather_now).state.c_str());
+        it.printf(forecast_now_x, forecast_now_y + 20, id(text_small), TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
+        it.printf(forecast_now_x, forecast_now_y + 40, id(text_small), TextAlign::CENTER, "%2.0f %", id(humidity_now).state);
+        it.printf(forecast_now_x, forecast_now_y + 60, id(text_small), TextAlign::CENTER, "%u hPa", id(pressure_now).state);
+
+        it.line(horizontal_divider2_x1, horizontal_divider2_y1, horizontal_divider2_x2, horizontal_divider2_y2);
 
         it.printf(forecast_time_x, forecast_first_y, id(text_med), TextAlign::CENTER_RIGHT, "%s", id(hourly_forecast_shorttime0).state.c_str());
         it.printf(forecast_icon_x, forecast_first_y, id(weather_icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
@@ -594,7 +623,7 @@ display:
         it.printf(forecast_icon_x, forecast_fifth_y, id(weather_icons_med), TextAlign::CENTER, "%s", weather_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
         it.printf(forecast_temp_x, forecast_fifth_y, id(text_med), TextAlign::CENTER_LEFT, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
-        it.line(horizontal_divider2_x1, horizontal_divider2_y1, horizontal_divider2_x2, horizontal_divider2_y2);
+        it.line(horizontal_divider3_x1, horizontal_divider3_y1, horizontal_divider3_x2, horizontal_divider3_y2);
 
         // Bottom Panel - ???
 
