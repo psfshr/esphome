@@ -82,6 +82,14 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: external_trigger
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: time_since_refresh
+    type: int
+    restore_value: yes
+    initial_value: '0'
   - id: recorded_display_refresh
     type: int
     restore_value: yes
@@ -92,18 +100,21 @@ script:
   - id: update_screen
     then:
       - lambda: 'id(data_updated) = false;'
+      - lambda: 'id(external_trigger) = false;'
+      - lambda: 'id(time_since_refresh) = 0;'
       - component.update: eink_display
       - lambda: 'id(recorded_display_refresh) += 1;'
       - lambda: 'id(display_last_update).publish_state(id(homeassistant_time).now().timestamp);'
 
-# Check whether the display needs to be refreshed every 5 minutes, based on whether new data is received and trigger is active
+# Check whether the display needs to be refreshed every 1 minutes, based on whether new data is received and trigger is active
 time:
   - platform: homeassistant
     id: homeassistant_time
     on_time:
       - seconds: 0
-        minutes: /5
+        minutes: /1
         then:
+          - logger.log: "Ping!"
           - output.turn_on: LED
           - delay: 250ms
           - output.turn_off: LED
@@ -119,8 +130,10 @@ time:
                       - script.execute: update_screen
                     else:
                       - logger.log: "Sensor data updated but no activity in home - skipping display refresh."
+                      - lambda: 'id(time_since_refresh) += 1;'
               else:
                 - logger.log: "No sensors updated - skipping display refresh."
+                - lambda: 'id(time_since_refresh) += 1;'
 
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
@@ -150,6 +163,9 @@ binary_sensor:
   - platform: homeassistant
     entity_id: binary_sensor.waveshare_epaper_6625d8_trigger
     id: waveshare_epaper_6625d8_trigger
+    on_press:
+      then:
+        - lambda: 'id(external_trigger) = true;'
 
 ###############################################################################
 
