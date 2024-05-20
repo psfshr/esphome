@@ -118,9 +118,9 @@ time:
         minutes: /1
         then:
           - logger.log: "Ping!"
-          - logger.log:
-              format: "States are %s, %s, %u"
-              args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
+          # - logger.log:
+          #     format: "States are %s, %s, %u"
+          #     args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
           - output.turn_on: LED
           - delay: 250ms
           - output.turn_off: LED
