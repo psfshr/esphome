@@ -1,0 +1,76 @@
+
+# https://community.home-assistant.io/t/uk-and-worldwide-pollen-count-using-tomorrow-io-api/306560
+
+rest:
+ - resource: !secret tomorrowio_pollen_api
+   scan_interval: 600
+   sensor:
+   ### Pollen - Tree Index
+     - name: "Pollen - Grass Index - Day 0"
+       value_template: "{{ value_json.data.timelines[0].intervals[0]['values']['grassIndex'] }}"
+       json_attributes_path: "$.data.timelines[0].intervals[0].values"
+       json_attributes:
+         - treeIndex
+         - weedIndex
+         - temperature
+     - name: "Pollen - Grass Index - Day 1"
+       value_template: "{{ value_json.data.timelines[0].intervals[1]['values']['grassIndex'] }}"
+       json_attributes_path: "$.data.timelines[0].intervals[1].values"
+       json_attributes:
+         - treeIndex
+         - weedIndex
+         - temperature
+     - name: "Pollen - Grass Index - Day 2"
+       value_template: "{{ value_json.data.timelines[0].intervals[2]['values']['grassIndex'] }}"
+       json_attributes_path: "$.data.timelines[0].intervals[2].values"
+       json_attributes:
+         - treeIndex
+         - weedIndex
+         - temperature
+     - name: "Pollen - Grass Index - Day 3"
+       value_template: "{{ value_json.data.timelines[0].intervals[3]['values']['grassIndex'] }}"
+       json_attributes_path: "$.data.timelines[0].intervals[3].values"
+       json_attributes:
+         - treeIndex
+         - weedIndex
+         - temperature
+     - name: "Pollen - Grass Index - Day 4"
+       value_template: "{{ value_json.data.timelines[0].intervals[4]['values']['grassIndex'] }}"
+       json_attributes_path: "$.data.timelines[0].intervals[4].values"
+       json_attributes:
+         - treeIndex
+         - weedIndex
+         - temperature
+
+template:
+  - sensor:
+      - name: Pollen - Grass
+        unique_id: sensor.pollen_grass
+        state: "{{ states('sensor.pollen_grass_index_day_0') }}"
+        icon: 'mdi:grass'
+        attributes:
+          Today: "{{ states('sensor.pollen_grass_index_day_0') }}"
+          Tomorrow: "{{ states('sensor.pollen_grass_index_day_1') }}"
+          Today + 2: "{{ states('sensor.pollen_grass_index_day_2') }}"
+          Today + 3: "{{ states('sensor.pollen_grass_index_day_3') }}"
+          Today + 4: "{{ states('sensor.pollen_grass_index_day_4') }}"
+      - name: Pollen - Tree
+        unique_id: sensor.pollen_tree
+        state: "{{ state_attr('sensor.pollen_grass_index_day_0', 'treeIndex') }}"
+        icon: 'mdi:tree'
+        attributes:
+          Today: "{{ state_attr('sensor.pollen_grass_index_day_0', 'treeIndex') }}"
+          Tomorrow: "{{ state_attr('sensor.pollen_grass_index_day_1', 'treeIndex') }}"
+          Today + 2: "{{ state_attr('sensor.pollen_grass_index_day_2', 'treeIndex') }}"
+          Today + 3: "{{ state_attr('sensor.pollen_grass_index_day_3', 'treeIndex') }}"
+          Today + 4: "{{ state_attr('sensor.pollen_grass_index_day_4', 'treeIndex') }}"
+      - name: Pollen - Weed
+        unique_id: sensor.pollen_weed
+        state: "{{ state_attr('sensor.pollen_grass_index_day_0', 'weedIndex') }}"
+        icon: 'mdi:spa'
+        attributes:
+          Today: "{{ state_attr('sensor.pollen_grass_index_day_0', 'weedIndex') }}"
+          Tomorrow: "{{ state_attr('sensor.pollen_grass_index_day_1', 'weedIndex') }}"
+          Today + 2: "{{ state_attr('sensor.pollen_grass_index_day_2', 'weedIndex') }}"
+          Today + 3: "{{ state_attr('sensor.pollen_grass_index_day_3', 'weedIndex') }}"
+          Today + 4: "{{ state_attr('sensor.pollen_grass_index_day_4', 'weedIndex') }}"
