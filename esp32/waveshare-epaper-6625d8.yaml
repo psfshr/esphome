@@ -87,7 +87,7 @@ globals:
     initial_value: 'false'
   - id: time_since_refresh
     type: int
-    restore_value: yes
+    restore_value: no
     initial_value: '0'
   - id: recorded_display_refresh
     type: int
