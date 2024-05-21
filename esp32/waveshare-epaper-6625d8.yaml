@@ -17,16 +17,15 @@ esphome:
         - wait_until:
             condition:
               lambda: 'return id(data_updated) == true;'
-          # Wait a bit longer so all the items are received
-        - delay: 5s
-        - logger.log: "Initial sensor data received: Refreshing display..."
+        - delay: 5s # Wait a bit longer so all the items are received
+        - logger.log: "Initial data received. Refreshing display"
         - lambda: 'id(initial_data_received) = true;'
         - script.execute: update_screen
 
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
 
 # Pins for Waveshare ePaper ESP Board
 spi:
@@ -117,10 +116,9 @@ time:
       - seconds: 0
         minutes: /1
         then:
-          - logger.log: "Ping!"
-          # - logger.log:
-          #     format: "States are %s, %s, %u"
-          #     args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
+          - logger.log:
+              format: "Ding! States are: Data %d / Trigger %d / Time %u"
+              args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
           - output.turn_on: LED
           - delay: 250ms
           - output.turn_off: LED
@@ -151,6 +149,10 @@ button:
     entity_category: config
     on_press:
       - script.execute: update_screen
+
+switch:
+  - platform: factory_reset
+    name: Factory Reset
 
 ###############################################################################
 # SENSORS #####################################################################
@@ -548,9 +550,9 @@ display:
       int horizontal_divider1_x2 = panel_x - 15;
       int horizontal_divider1_y2 = 80;
 
-      int vertical_divider_x1 = 550;
+      int vertical_divider_x1 = 545;
       int vertical_divider_y1 = horizontal_divider1_y1 + 15;
-      int vertical_divider_x2 = 550;
+      int vertical_divider_x2 = 545;
       int vertical_divider_y2 = panel_y - 15;
 
       int horizontal_divider2_x1 = vertical_divider_x1 + 15;
@@ -560,7 +562,7 @@ display:
 
       int horizontal_divider3_x1 = 15;
       int horizontal_divider3_y1 = panel_y - 80;
-      int horizontal_divider3_x2 = 535;
+      int horizontal_divider3_x2 = 530;
       int horizontal_divider3_y2 = panel_y - 80;
 
       // Forecast
@@ -570,7 +572,7 @@ display:
       int forecast_temp_x = 710; // CENTER_LEFT
 
       int forecast_now_y = 100;
-      int forecast_first_y = horizontal_divider2_y1 + 25;
+      int forecast_first_y = horizontal_divider2_y1 + 35;
       int forecast_second_y = forecast_first_y + 50;
       int forecast_third_y = forecast_second_y + 50;
       int forecast_fourth_y = forecast_third_y + 50;
@@ -578,10 +580,10 @@ display:
 
       if (id(initial_data_received) == false) {
         // Show loading screen before data is received.
-        it.printf(panel_x_mid, panel_y_mid, id(text_med), COLOR_ON, TextAlign::CENTER, "WAITING FOR DATA...", COLOR_OFF);
+        it.printf(panel_x_mid, panel_y_mid, id(text_med), TextAlign::CENTER, "WAITING FOR DATA...");
       } else {
         // Top Panel - Header
-        it.printf(header_title_x, header_title_y, id(text_title), COLOR_ON, TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str(), COLOR_OFF);
+        it.printf(header_title_x, header_title_y, id(text_title), TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str());
 
         it.strftime(header_date_x, header_date_y, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
         it.strftime(header_date_x, header_date2_y, id(text_large), TextAlign::TOP_RIGHT, "%e %B %Y", id(homeassistant_time).now());
@@ -598,8 +600,8 @@ display:
 
         it.printf(forecast_now_x, forecast_now_y, id(text_small), TextAlign::CENTER, "%s", id(weather_now).state.c_str());
         it.printf(forecast_now_x, forecast_now_y + 20, id(text_small), TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
-        it.printf(forecast_now_x, forecast_now_y + 40, id(text_small), TextAlign::CENTER, "%2.0f %", id(humidity_now).state);
-        it.printf(forecast_now_x, forecast_now_y + 60, id(text_small), TextAlign::CENTER, "%u hPa", id(pressure_now).state);
+        it.printf(forecast_now_x, forecast_now_y + 40, id(text_small), TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
+        it.printf(forecast_now_x, forecast_now_y + 60, id(text_small), TextAlign::CENTER, "%2.0f hPa", id(pressure_now).state);
 
         it.line(horizontal_divider2_x1, horizontal_divider2_y1, horizontal_divider2_x2, horizontal_divider2_y2);
 
