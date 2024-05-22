@@ -9,21 +9,24 @@ esphome:
   platform: ESP32
   board: m5stack-core-esp32
 
+# Wifi information
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   fast_connect: true
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: Fallback ${device_name}
+    ssid: ${name}
+    password: ${name}
 
 captive_portal:
 
-logger:
-
+# Enable Home Assistant API
 api:
 
 ota:
+
+# Enable logging
+logger:
 
 
 ## Device-specific

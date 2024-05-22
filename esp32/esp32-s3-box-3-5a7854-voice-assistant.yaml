@@ -8,12 +8,22 @@ esphome:
   name: ${name}
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
-api:
 
-ota:
-
-
+# Wifi information
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   fast_connect: true
+  ap:
+    ssid: ${name}
+    password: ${name}
+
+captive_portal:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+# Enable logging
+logger:
