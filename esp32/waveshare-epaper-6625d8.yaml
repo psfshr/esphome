@@ -47,10 +47,8 @@ captive_portal:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: "VJMi9X5Fk8nSx/45ycpJzCBrWyF4XxG2TyTheGcjgdY="
+
 ota:
-  password: "3a328410f03e6b4c2e45ba985dc11ad7"
 
 # Enable logging
 logger:
