@@ -1,4 +1,20 @@
 ###############################################################################
+# NOTES #######################################################################
+###############################################################################
+
+# https://www.waveshare.com/e-paper-esp32-driver-board.htm
+# https://www.waveshare.com/wiki/E-Paper_ESP32_Driver_Board
+# https://files.waveshare.com/upload/8/80/E-Paper_ESP32_Driver_Board_Schematic.pdf
+
+# Can't use GPIO 13, 14, 15, 25, 26, 27 as they're on the ePaper connector
+
+# https://esphome.io/components/i2c
+# https://esphome.io/components/uart
+
+# https://esphome.io/components/sensor/ld2420
+
+
+###############################################################################
 # BASE DEVICE CONFIG ##########################################################
 ###############################################################################
 
@@ -31,6 +47,14 @@ esp32:
 spi:
   clk_pin: GPIO13
   mosi_pin: GPIO14
+
+# uart:
+#   id: ld2420_uart
+#   tx_pin: GPIO23
+#   rx_pin: GPIO22
+#   baud_rate: 115200
+#   parity: NONE
+#   stop_bits: 1
 
 ###############################################################################
 
@@ -65,6 +89,8 @@ output:
       number: GPIO2
       mode: output
     id: LED
+
+# ld2420:
 
 ###############################################################################
 # VARIABLES & SCRIPTS #########################################################
@@ -134,6 +160,22 @@ time:
                 - logger.log: "Skipping display refresh - Either no sensor data updated, no activity in home, or not yet at rate limit timer"
                 - lambda: 'id(time_since_refresh) += 1;'
 
+# number:
+#   - platform: ld2420
+#     presence_timeout:
+#       name: Detection Presence Timeout
+#     min_gate_distance:
+#       name: Detection Gate Minimum
+#     max_gate_distance:
+#       name: Detection Gate Maximum
+    # See "Number" section below for detail
+    # gate_select:
+    #   name: Select Gate to Set
+    # still_threshold:
+    #   name: Set Still Threshold Value
+    # move_threshold:
+    #   name: Set Move Threshold Value
+
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
 ###############################################################################
@@ -148,6 +190,21 @@ button:
     entity_category: config
     on_press:
       - script.execute: update_screen
+
+  # - platform: ld2420
+  #   apply_config:
+  #     name: Apply Config
+  #   factory_reset:
+  #     name: Factory Reset
+  #   restart_module:
+  #     name: Restart Module
+  #   revert_config:
+  #     name: Undo Edits
+
+# select:
+#   - platform: ld2420
+#     operating_mode:
+#       name: Operating Mode
 
 switch:
   - platform: factory_reset
@@ -169,6 +226,10 @@ binary_sensor:
     on_press:
       then:
         - lambda: 'id(external_trigger) = true;'
+
+  # - platform: ld2420
+  #   has_target:
+  #     name: Presence
 
 ###############################################################################
 
@@ -309,6 +370,10 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+  # - platform: ld2420
+  #   fw_version:
+  #     name: LD2420 Firmware
+
 ###############################################################################
 
 sensor:
@@ -404,6 +469,9 @@ sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+  # - platform: ld2420
+  #   moving_distance:
+  #     name : Moving Distance
 
 ###############################################################################
 # FONTS & TEXT ################################################################
@@ -484,6 +552,7 @@ font:
       - "\U000F1C78" # weather-hurricane-outline / exceptional
       - "\U000F0F31" # weather-night-partly-cloudy / partlycloudy-night
       - "\U000F02D6" # Blank
+      - "\U000F05CE" # clock-alert-outline
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: weather_icons_large
