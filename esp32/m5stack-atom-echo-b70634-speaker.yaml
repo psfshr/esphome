@@ -1,12 +1,13 @@
 substitutions:
-  name: m5stack-atom-lite-315bd0
-  friendly_name: Study Atom Speaker 315bd0
+  name: m5stack-atom-echo-b70634
+  friendly_name: Bedroom Atom Echo b70634
 packages:
-  m5stack.atom-speaker-kit: github://esphome/firmware/media-player/m5stack-atom-speaker-kit.yaml@main
+  m5stack.atom-echo: github://esphome/firmware/media-player/m5stack-atom-echo.yaml@main
 esphome:
   name: ${name}
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
+
 
 # Wifi information
 wifi:
@@ -21,6 +22,8 @@ captive_portal:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: u2TzqM15NfFCjK1tUO3HtM4LLPe38rO5T4YY67TYcT0=
 
 ota:
 

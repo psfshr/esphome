@@ -23,7 +23,9 @@ captive_portal:
 # Enable Home Assistant API
 api:
 
-ota:
+api:
+  encryption:
+    key: lVB3Eddi7iRL1fYdX5PHH/0htdZgPkOCMZbuAWlgTgc=
 
 # Enable logging
 logger:
