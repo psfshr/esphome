@@ -1,3 +1,7 @@
+###############################################################################
+# BASE DEVICE CONFIG ##########################################################
+###############################################################################
+
 substitutions:
   name: esp32-s3-box-3-5a7854
   friendly_name: Study S3 Voice 5a7854
@@ -9,6 +13,8 @@ esphome:
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
 
+###############################################################################
+
 # Wifi information
 wifi:
   ssid: !secret wifi_ssid
@@ -18,14 +24,14 @@ wifi:
     ssid: ${name}
     password: ${name}
 
-captive_portal:
-
 # Enable Home Assistant API
-api:
-
 api:
   encryption:
     key: lVB3Eddi7iRL1fYdX5PHH/0htdZgPkOCMZbuAWlgTgc=
-
+ota:
+  password: bFv/mB1BNQOGNe/NH6p3gBPpua92F82BMMOh2jCy5bc=
+  
 # Enable logging
 logger:
+
+###############################################################################

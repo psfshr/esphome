@@ -1,3 +1,7 @@
+###############################################################################
+# BASE DEVICE CONFIG ##########################################################
+###############################################################################
+
 substitutions:
   name: m5stack-atom-lite-315bd0
   friendly_name: Study Atom Speaker 315bd0
@@ -8,6 +12,8 @@ esphome:
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
 
+###############################################################################
+
 # Wifi information
 wifi:
   ssid: !secret wifi_ssid
@@ -17,14 +23,14 @@ wifi:
     ssid: ${name}
     password: ${name}
 
-captive_portal:
-
 # Enable Home Assistant API
-api:
-
 api:
   encryption:
     key: PDqaggnKXPtyz2GE4WA8j/kFTvauCuZ9kdugv4CRZUM=
+ota:
+  password: 9bANiFOqgVV/EtH8AlZ+K0CZ29T/+mBwcVdfxoGE0VI=
 
 # Enable logging
 logger:
+
+###############################################################################

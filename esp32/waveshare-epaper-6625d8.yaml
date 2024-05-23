@@ -32,6 +32,8 @@ spi:
   clk_pin: GPIO13
   mosi_pin: GPIO14
 
+###############################################################################
+
 # Wifi information
 wifi:
   ssid: !secret wifi_ssid
@@ -43,12 +45,9 @@ wifi:
     ssid: ${name}
     password: ${name}
 
-captive_portal:
-
 api:
   encryption:
     key: "VJMi9X5Fk8nSx/45ycpJzCBrWyF4XxG2TyTheGcjgdY="
-
 ota:
   password: "3a328410f03e6b4c2e45ba985dc11ad7"
 

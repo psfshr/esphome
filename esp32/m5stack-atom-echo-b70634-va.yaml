@@ -1,3 +1,7 @@
+###############################################################################
+# BASE DEVICE CONFIG ##########################################################
+###############################################################################
+
 substitutions:
   name: m5stack-atom-echo-b70634
   friendly_name: Bedroom Atom Echo b70634
@@ -8,6 +12,8 @@ esphome:
   name_add_mac_suffix: false
   friendly_name: ${friendly_name}
 
+################################################################################
+
 # Wifi information
 wifi:
   ssid: !secret wifi_ssid
@@ -17,14 +23,14 @@ wifi:
     ssid: ${name}
     password: ${name}
 
-captive_portal:
-
 # Enable Home Assistant API
 api:
   encryption:
     key: u2TzqM15NfFCjK1tUO3HtM4LLPe38rO5T4YY67TYcT0=
-
 ota:
+  password: vCsLi39nZlYd96vt/aiuAWr8U2pTkeWXPsEx9RA3atI=
 
 # Enable logging
 logger:
+
+################################################################################
