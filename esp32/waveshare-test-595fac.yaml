@@ -201,7 +201,8 @@ sensor:
     moving_distance:
       name : Moving Distance
       on_value_range:
-        - below: 20
+        - above: 1
+          below: 10
           then:
             - binary_sensor.template.publish:
                 id: tof_near
@@ -209,8 +210,8 @@ sensor:
             - binary_sensor.template.publish:
                 id: tof_mid
                 state: OFF
-        - above: 20
-          below: 50
+        - above: 10
+          below: 30
           then:
             - binary_sensor.template.publish:
                 id: tof_near
@@ -218,7 +219,7 @@ sensor:
             - binary_sensor.template.publish:
                 id: tof_mid
                 state: ON
-        - above: 50
+        - above: 30
           then:
             - binary_sensor.template.publish:
                 id: tof_near
