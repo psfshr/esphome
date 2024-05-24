@@ -47,25 +47,6 @@ psram:
   mode: quad
   speed: 80MHz
 
-i2c:
-  sda: GPIO01
-  scl: GPIO02
-  scan: true
-  id: bus_a
-
-# uart:
-#   tx_pin: GPIO43
-#   rx_pin: GPIO44
-#   baud_rate: 115200
-
-uart:
-  id: ld2420_uart
-  tx_pin: GPIO13
-  rx_pin: GPIO12
-  baud_rate: 115200
-  parity: NONE
-  stop_bits: 1
-
 ################################################################################
 
 # Wifi information
@@ -92,6 +73,25 @@ logger:
 ###############################################################################
 # INPUTS & OUTPUTS ############################################################
 ###############################################################################
+
+i2c:
+  sda: GPIO01
+  scl: GPIO02
+  scan: true
+  id: bus_a
+
+# uart:
+#   tx_pin: GPIO43
+#   rx_pin: GPIO44
+#   baud_rate: 115200
+
+uart:
+  id: ld2420_uart
+  tx_pin: GPIO13
+  rx_pin: GPIO12
+  baud_rate: 115200
+  parity: NONE
+  stop_bits: 1
 
 output:
   - platform: gpio
