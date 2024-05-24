@@ -141,9 +141,6 @@ time:
       - seconds: 0
         minutes: /1
         then:
-          - logger.log:
-              format: "Ding! States are: Data %d / Trigger %d / Time %u"
-              args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
           - output.turn_on: LED
           - delay: 250ms
           - output.turn_off: LED
@@ -154,10 +151,14 @@ time:
                   - lambda: 'return id(external_trigger) == true;' # We have to had had an external (presense) trigger
                   - lambda: 'return id(time_since_refresh) >= 5;' # It has to have been at least 5 minutes since the last refresh
               then:
-                - logger.log: "Refreshing display - Sensor data updated, activity detected, and past rate limit timer"
+                - logger.log:
+                    format: "Refreshing display - States are: Sensor Data %d / Activity Trigger %d / Rate Limit Timer %u"
+                    args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
                 - script.execute: update_screen
               else:
-                - logger.log: "Skipping display refresh - Either no sensor data updated, no activity in home, or not yet at rate limit timer"
+                - logger.log:
+                    format: "Skipping display refresh -  States are: Sensor Data %d / Activity Trigger %d / Rate Limit Timer %u"
+                    args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
 # number:
@@ -638,10 +639,10 @@ display:
       int horizontal_divider3_y2 = panel_y - 80;
 
       // Forecast
-      int forecast_now1_x = 610;
-      int forecast_now2_x = 715;
-      int forecast_now1_y = 125;
-      int forecast_now2_y = 140;
+      int forecast_now1_x = 625;
+      int forecast_now2_x = 720;
+      int forecast_now1_y = 135;
+      int forecast_now2_y = 150;
 
       int forecast_col1_x = 605; // CENTER
       int forecast_col2_x = 675; // CENTER
@@ -655,8 +656,8 @@ display:
 
       if (id(initial_data_received) == false) {
         // Show loading screen before data is received.
-        it.printf(panel_x_mid, panel_y_mid - 30, id(weather_icons_large), TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
-        it.printf(panel_x_mid, panel_y_mid + 30, id(text_large), TextAlign::CENTER, "WAITING FOR DATA");
+        it.printf(panel_x_mid, panel_y_mid - 35, id(weather_icons_large), TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
+        it.printf(panel_x_mid, panel_y_mid + 35, id(text_large), TextAlign::CENTER, "WAITING FOR DATA");
       } else {
         // Top Panel - Header
         it.printf(header_title_x, header_title_y, id(text_title), TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str());
@@ -675,7 +676,6 @@ display:
         it.printf(forecast_now1_x, forecast_now1_y, id(weather_icons_large), TextAlign::CENTER, "%s", font_icon_map[id(weather_now).state.c_str()].c_str());
         it.printf(forecast_now2_x, forecast_now2_y - 30, id(text_med), TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
         it.printf(forecast_now2_x, forecast_now2_y, id(text_med), TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
-        it.printf(forecast_now2_x, forecast_now2_y + 30, id(text_med), TextAlign::CENTER, "%2.0f hPa", id(pressure_now).state);
 
         it.line(horizontal_divider2_x1, horizontal_divider2_y1, horizontal_divider2_x2, horizontal_divider2_y2);
 
