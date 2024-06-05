@@ -182,6 +182,8 @@ button:
     name: "Shutdown"
   - platform: restart
     name: "Restart"
+  - platform: safe_mode
+    name: ${friendly_name} Restart (Safe Mode)
   - platform: template
     name: "Refresh Screen"
     entity_category: config
