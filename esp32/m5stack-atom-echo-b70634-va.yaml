@@ -4,7 +4,7 @@
 
 substitutions:
   name: m5stack-atom-echo-b70634
-  friendly_name: Study Atom Echo b70634
+  friendly_name: Bedroom Atom Echo Voice b70634
 esphome:
   name: ${name}
   name_add_mac_suffix: false
@@ -12,7 +12,7 @@ esphome:
 esp32:
   board: m5stack-atom
   framework:
-    type: arduino
+    type: esp-idf
 
 packages:
   m5stack.atom-echo: github://esphome/firmware/voice-assistant/m5stack-atom-echo.yaml@main

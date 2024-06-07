@@ -4,7 +4,7 @@
 
 substitutions:
   name: m5stack-atom-lite-315bd0
-  friendly_name: Study Atom Speaker 315bd0
+  friendly_name: Study Atom Lite Speaker 315bd0
 esphome:
   name: ${name}
   name_add_mac_suffix: false

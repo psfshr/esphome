@@ -4,7 +4,7 @@
 
 substitutions:
   name: m5stack-atom-echo-b70634
-  friendly_name: Study Atom Echo b70634
+  friendly_name: Bedroom Atom Echo Speaker b70634
 esphome:
   name: ${name}
   name_add_mac_suffix: false
