@@ -669,10 +669,12 @@ display:
       int horizontal_divider3_y2 = panel_y - 80;
 
       // Now
-      int forecast_now1_x = 625;
-      int forecast_now2_x = 720;
-      int forecast_now1_y = 130;
-      int forecast_now2_y = 145;
+      int forecast_now1_x = 605;
+      int forecast_now1_y = 120;
+      int forecast_now2_x = 675;
+      int forecast_now2_y = 120;
+      int forecast_now3_x = 740;
+      int forecast_now3_y = 120;
 
       int pollen_col1_x = 590;
       int pollen_col2_x = pollen_col1_x + 30;
@@ -680,7 +682,7 @@ display:
       int pollen_col4_x = pollen_col3_x + 30;
       int pollen_col5_x = pollen_col4_x + 40;
       int pollen_col6_x = pollen_col5_x + 30;
-      int pollen_row1_y = 185;
+      int pollen_row1_y = 175;
 
       // Forecast
       int forecast_col1_x = 605; // CENTER
@@ -716,8 +718,8 @@ display:
         // Right Panel - Weather Forecast
 
         it.printf(forecast_now1_x, forecast_now1_y, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(weather_now).state.c_str()].c_str());
-        it.printf(forecast_now2_x, forecast_now2_y - 30, id(text_med), TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
-        it.printf(forecast_now2_x, forecast_now2_y, id(text_med), TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
+        it.printf(forecast_now2_x, forecast_now2_y, id(text_med), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
+        it.printf(forecast_now3_x, forecast_now3_y, id(text_med), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
 
         it.printf(pollen_col1_x, pollen_row1_y, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
         it.printf(pollen_col2_x, pollen_row1_y, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass).state.c_str());
