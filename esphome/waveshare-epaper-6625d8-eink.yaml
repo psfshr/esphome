@@ -72,13 +72,13 @@ spi:
   clk_pin: GPIO13
   mosi_pin: GPIO14
 
-# uart:
-#   id: ld2420_uart
-#   tx_pin: GPIO23
-#   rx_pin: GPIO22
-#   baud_rate: 115200
-#   parity: NONE
-#   stop_bits: 1
+uart:
+  id: ld2420_uart
+  tx_pin: GPIO23
+  rx_pin: GPIO22
+  baud_rate: 115200
+  parity: NONE
+  stop_bits: 1
 
 output:
   - platform: gpio
@@ -87,7 +87,7 @@ output:
       mode: output
     id: LED
 
-# ld2420:
+ld2420:
 
 ###############################################################################
 # VARIABLES & SCRIPTS #########################################################
@@ -158,20 +158,20 @@ time:
                     args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
-# number:
-#   - platform: ld2420
-#     presence_timeout:
-#       name: Detection Presence Timeout
-#     min_gate_distance:
-#       name: Detection Gate Minimum
-#     max_gate_distance:
-#       name: Detection Gate Maximum
-    # gate_select:
-    #   name: Select Gate to Set
-    # still_threshold:
-    #   name: Set Still Threshold Value
-    # move_threshold:
-    #   name: Set Move Threshold Value
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: Detection Presence Timeout
+    min_gate_distance:
+      name: Detection Gate Minimum
+    max_gate_distance:
+      name: Detection Gate Maximum
+    gate_select:
+      name: Select Gate to Set
+    still_threshold:
+      name: Set Still Threshold Value
+    move_threshold:
+      name: Set Move Threshold Value
 
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
@@ -190,20 +190,20 @@ button:
     on_press:
       - script.execute: update_screen
 
-  # - platform: ld2420
-  #   apply_config:
-  #     name: Apply Config
-  #   factory_reset:
-  #     name: Factory Reset
-  #   restart_module:
-  #     name: Restart Module
-  #   revert_config:
-  #     name: Undo Edits
+  - platform: ld2420
+    apply_config:
+      name: Apply Config
+    factory_reset:
+      name: Factory Reset
+    restart_module:
+      name: Restart Module
+    revert_config:
+      name: Undo Edits
 
-# select:
-#   - platform: ld2420
-#     operating_mode:
-#       name: Operating Mode
+select:
+  - platform: ld2420
+    operating_mode:
+      name: Operating Mode
 
 switch:
   - platform: factory_reset
@@ -226,9 +226,9 @@ binary_sensor:
       then:
         - lambda: 'id(external_trigger) = true;'
 
-  # - platform: ld2420
-  #   has_target:
-  #     name: Presence
+  - platform: ld2420
+    has_target:
+      name: Presence
 
 ###############################################################################
 
@@ -394,9 +394,9 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
-  # - platform: ld2420
-  #   fw_version:
-  #     name: LD2420 Firmware
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
 
 ###############################################################################
 
@@ -493,9 +493,9 @@ sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
-  # - platform: ld2420
-  #   moving_distance:
-  #     name : Moving Distance
+  - platform: ld2420
+    moving_distance:
+      name : Moving Distance
 
 ###############################################################################
 # FONTS & TEXT ################################################################
