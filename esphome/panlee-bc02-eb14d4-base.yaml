@@ -2,8 +2,10 @@
 # NOTES #######################################################################
 ###############################################################################
 
+# https://fcc.report/FCC-ID/2BCBKTR4848/6883560.pdf
+
 # NEEDS TO BE INITIALLY FLASHED VIA THE ESPHOME CLI, NOT THE WEB UI
-# DISPLAY DRIVER NOT CURRENTLY SUPPORTED BY ESPHOME (12/06/2024)
+# DISPLAY DRIVER (GC9503V) NOT CURRENTLY SUPPORTED BY ESPHOME (12/06/2024)
 
 ###############################################################################
 # BASE DEVICE CONFIG ##########################################################
