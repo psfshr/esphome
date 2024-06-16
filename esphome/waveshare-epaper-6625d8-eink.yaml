@@ -161,17 +161,17 @@ time:
 number:
   - platform: ld2420
     presence_timeout:
-      name: Detection Presence Timeout
+      name: mmWave Presence Timeout
     min_gate_distance:
-      name: Detection Gate Minimum
+      name: mmWave Gate Minimum
     max_gate_distance:
-      name: Detection Gate Maximum
+      name: mmWave Gate Maximum
     gate_select:
-      name: Select Gate to Set
+      name: mmWave Gate Select
     still_threshold:
-      name: Set Still Threshold Value
+      name: mmWave Still Threshold Value
     move_threshold:
-      name: Set Move Threshold Value
+      name: mmWave Move Threshold Value
 
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
@@ -179,35 +179,35 @@ number:
 
 button:
   - platform: shutdown
-    name: "Shutdown"
+    name: ESP32 Shutdown
   - platform: restart
-    name: "Restart"
+    name: ESP32 Restart
   - platform: safe_mode
-    name: ${friendly_name} Restart (Safe Mode)
+    name: ESP32 Restart (Safe Mode)
   - platform: template
-    name: "Refresh Screen"
+    name: ESP32 Refresh Screen
     entity_category: config
     on_press:
       - script.execute: update_screen
 
   - platform: ld2420
     apply_config:
-      name: Apply Config
+      name: mmWave Apply Config
     factory_reset:
-      name: Factory Reset
+      name: mmWave Factory Reset
     restart_module:
-      name: Restart Module
+      name: mmWave Restart
     revert_config:
-      name: Undo Edits
+      name: mmWave Undo
 
 select:
   - platform: ld2420
     operating_mode:
-      name: Operating Mode
+      name: mmWave Mode
 
 switch:
   - platform: factory_reset
-    name: Factory Reset
+    name: ESP32 Factory Reset
 
 ###############################################################################
 # SENSORS #####################################################################
@@ -216,7 +216,7 @@ switch:
 binary_sensor:
   # Device Sensors - for monitoring device remotely
   - platform: status
-    name: "Status"
+    name: ESP32 Status
 
   # Home Assistant General Sensors
   - platform: homeassistant
@@ -228,7 +228,7 @@ binary_sensor:
 
   - platform: ld2420
     has_target:
-      name: Presence
+      name: mmWave Presence
 
 ###############################################################################
 
@@ -403,19 +403,19 @@ text_sensor:
 sensor:
     #Device UPTIME
   - platform: uptime
-    name: Uptime
+    name: ESP32 Uptime
     id: sys_uptime
     update_interval: 60s
 
   # Device Sensors - for monitoring device remotely
   - platform: template
-    name: "Display Last Update"
+    name: Display Last Update
     device_class: timestamp
     entity_category: "diagnostic"
     id: display_last_update
     
   - platform: template
-    name: "Recorded Display Refresh"
+    name: Display Num Refresh
     accuracy_decimals: 0
     unit_of_measurement: "Refreshes"
     state_class: "total_increasing"
@@ -423,7 +423,7 @@ sensor:
     lambda: 'return id(recorded_display_refresh);'
   
   - platform: wifi_signal
-    name: "WiFi Signal Strength"
+    name: WiFi Signal
     id: wifisignal
     unit_of_measurement: "dBm"
     entity_category: "diagnostic"
@@ -495,7 +495,7 @@ sensor:
 
   - platform: ld2420
     moving_distance:
-      name : Moving Distance
+      name : mmWave Moving Distance
 
 ###############################################################################
 # FONTS & TEXT ################################################################
