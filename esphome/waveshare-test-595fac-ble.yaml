@@ -158,8 +158,8 @@ sensor:
 esp32_ble_tracker:
   on_ble_advertise:
     - mac_address:
-        - 11:11:11:11:11:11
-        - 22:22:22:22:22:22
+        - "11:11:11:11:11:11"
+        - "22:22:22:22:22:22"
       then:
         - lambda: |-
             ESP_LOGD("ble_adv", "New BLE device");
