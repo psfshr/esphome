@@ -425,7 +425,7 @@ sensor:
     lambda: 'return id(recorded_display_refresh);'
   
   - platform: wifi_signal
-    name: WiFi Signal
+    name: ESP32 WiFi Signal
     id: wifisignal
     unit_of_measurement: "dBm"
     entity_category: "diagnostic"
