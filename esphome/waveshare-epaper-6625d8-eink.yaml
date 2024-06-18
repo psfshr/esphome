@@ -64,7 +64,7 @@ logger:
 #  level: VERBOSE #DEBUG
 
 ###############################################################################
-# INPUTS & OUTPUTS ############################################################
+# INPUTS / OUTPUTS / MODULES ##################################################
 ###############################################################################
 
 # Pins for Waveshare ePaper ESP Board
@@ -116,6 +116,21 @@ globals:
     restore_value: yes
     initial_value: '0'
 
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: mmWave Presence Timeout
+    min_gate_distance:
+      name: mmWave Gate Minimum
+    max_gate_distance:
+      name: mmWave Gate Maximum
+    gate_select:
+      name: mmWave Gate Select
+    still_threshold:
+      name: mmWave Still Threshold Value
+    move_threshold:
+      name: mmWave Move Threshold Value
+
 # Script for updating screen - Refresh display and publish refresh count and time.
 script:
   - id: update_screen
@@ -158,21 +173,6 @@ time:
                     args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
-number:
-  - platform: ld2420
-    presence_timeout:
-      name: mmWave Presence Timeout
-    min_gate_distance:
-      name: mmWave Gate Minimum
-    max_gate_distance:
-      name: mmWave Gate Maximum
-    gate_select:
-      name: mmWave Gate Select
-    still_threshold:
-      name: mmWave Still Threshold Value
-    move_threshold:
-      name: mmWave Move Threshold Value
-
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
 ###############################################################################
@@ -210,15 +210,17 @@ switch:
     name: ESP32 Factory Reset
 
 ###############################################################################
-# SENSORS #####################################################################
+# BINARY SENSORS ##############################################################
 ###############################################################################
 
 binary_sensor:
-  # Device Sensors - for monitoring device remotely
   - platform: status
     name: ESP32 Status
 
-  # Home Assistant General Sensors
+  - platform: ld2420
+    has_target:
+      name: mmWave Presence
+
   - platform: homeassistant
     entity_id: binary_sensor.waveshare_epaper_6625d8_trigger
     id: waveshare_epaper_6625d8_trigger
@@ -226,10 +228,8 @@ binary_sensor:
       then:
         - lambda: 'id(external_trigger) = true;'
 
-  - platform: ld2420
-    has_target:
-      name: mmWave Presence
-
+###############################################################################
+# TEXT SENSORS ################################################################
 ###############################################################################
 
 text_sensor:
@@ -398,6 +398,8 @@ text_sensor:
     fw_version:
       name: LD2420 Firmware
 
+###############################################################################
+# GENERAL SENSORS #############################################################
 ###############################################################################
 
 sensor:
