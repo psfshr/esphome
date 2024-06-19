@@ -402,7 +402,8 @@ sensor:
     moving_distance:
       name : mmWave Moving Distance
       filters:
-        - throttle: 15s
+        - throttle_average: 15s
+        - filter_out: nan
 
   # Device Sensors - for monitoring device remotely
   - platform: template
