@@ -3,23 +3,7 @@
 
 template:
   ################################################################################
-  # SMARTFRAME TRIGGERS ##########################################################
-  ################################################################################
-
-  # waveshare-epaper-6625d8
-  - binary_sensor:
-      - name: Waveshare ePaper 6625d8 Trigger
-        unique_id: "waveshare-epaper-6625d8-trigger"
-        delay_off: 00:01:00
-        state: >-
-          {%- if states('binary_sensor.study_motion_motion') == 'on' %}
-            on
-          {%- else -%}
-            off
-          {%- endif -%}
-
-  ################################################################################
-  # SMARTFRAME MISC ##############################################################
+  # SMARTFRAME TIME OF DAY #######################################################
   ################################################################################
 
   - trigger:
@@ -144,6 +128,74 @@ template:
                 {{ cond4 }}
             {% endif %}
           temperature4: "{{ forecast_hourly['weather.forecast_home'].forecast[4].temperature }}"
+
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+        minutes: 0
+        seconds: 0
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: daily
+        target:
+          entity_id:
+            - weather.forecast_home
+        response_variable: forecast_daily
+    sensor:
+      - name: Weather Forecast Daily
+        unique_id: weather_forecast_daily
+        state: "none"
+        attributes: #0-5
+          datetime0: "{{ forecast_daily['weather.forecast_home'].forecast[0].datetime }}"
+          condition0: "{{ forecast_daily['weather.forecast_home'].forecast[0].condition }}"
+          temperature0: "{{ forecast_daily['weather.forecast_home'].forecast[0].temperature }}"
+          templow0: "{{ forecast_daily['weather.forecast_home'].forecast[0].templow }}"
+          humidity0: "{{ forecast_daily['weather.forecast_home'].forecast[0].humidity }}"
+          wind_speed0: "{{ forecast_daily['weather.forecast_home'].forecast[0].wind_speed }}"
+          wind_bearing0: "{{ forecast_daily['weather.forecast_home'].forecast[0].wind_bearing }}"
+          precipitation0: "{{ forecast_daily['weather.forecast_home'].forecast[0].precipitation }}"
+          datetime1: "{{ forecast_daily['weather.forecast_home'].forecast[1].datetime }}"
+          condition1: "{{ forecast_daily['weather.forecast_home'].forecast[1].condition }}"
+          temperature1: "{{ forecast_daily['weather.forecast_home'].forecast[1].temperature }}"
+          templow1: "{{ forecast_daily['weather.forecast_home'].forecast[1].templow }}"
+          humidity1: "{{ forecast_daily['weather.forecast_home'].forecast[1].humidity }}"
+          wind_speed1: "{{ forecast_daily['weather.forecast_home'].forecast[1].wind_speed }}"
+          wind_bearing1: "{{ forecast_daily['weather.forecast_home'].forecast[1].wind_bearing }}"
+          precipitation1: "{{ forecast_daily['weather.forecast_home'].forecast[1].precipitation }}"
+          datetime2: "{{ forecast_daily['weather.forecast_home'].forecast[2].datetime }}"
+          condition2: "{{ forecast_daily['weather.forecast_home'].forecast[2].condition }}"
+          temperature2: "{{ forecast_daily['weather.forecast_home'].forecast[2].temperature }}"
+          templow2: "{{ forecast_daily['weather.forecast_home'].forecast[2].templow }}"
+          humidity2: "{{ forecast_daily['weather.forecast_home'].forecast[2].humidity }}"
+          wind_speed2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_speed }}"
+          wind_bearing2: "{{ forecast_daily['weather.forecast_home'].forecast[2].wind_bearing }}"
+          precipitation2: "{{ forecast_daily['weather.forecast_home'].forecast[2].precipitation }}"
+          datetime3: "{{ forecast_daily['weather.forecast_home'].forecast[3].datetime }}"
+          condition3: "{{ forecast_daily['weather.forecast_home'].forecast[3].condition }}"
+          temperature3: "{{ forecast_daily['weather.forecast_home'].forecast[3].temperature }}"
+          templow3: "{{ forecast_daily['weather.forecast_home'].forecast[3].templow }}"
+          humidity3: "{{ forecast_daily['weather.forecast_home'].forecast[3].humidity }}"
+          wind_speed3: "{{ forecast_daily['weather.forecast_home'].forecast[3].wind_speed }}"
+          wind_bearing3: "{{ forecast_daily['weather.forecast_home'].forecast[3].wind_bearing }}"
+          precipitation3: "{{ forecast_daily['weather.forecast_home'].forecast[3].precipitation }}"
+          datetime4: "{{ forecast_daily['weather.forecast_home'].forecast[4].datetime }}"
+          condition4: "{{ forecast_daily['weather.forecast_home'].forecast[4].condition }}"
+          temperature4: "{{ forecast_daily['weather.forecast_home'].forecast[4].temperature }}"
+          templow4: "{{ forecast_daily['weather.forecast_home'].forecast[4].templow }}"
+          humidity4: "{{ forecast_daily['weather.forecast_home'].forecast[4].humidity }}"
+          wind_speed4: "{{ forecast_daily['weather.forecast_home'].forecast[4].wind_speed }}"
+          wind_bearing4: "{{ forecast_daily['weather.forecast_home'].forecast[4].wind_bearing }}"
+          precipitation4: "{{ forecast_daily['weather.forecast_home'].forecast[4].precipitation }}"
+          datetime5: "{{ forecast_daily['weather.forecast_home'].forecast[5].datetime }}"
+          condition5: "{{ forecast_daily['weather.forecast_home'].forecast[5].condition }}"
+          temperature5: "{{ forecast_daily['weather.forecast_home'].forecast[5].temperature }}"
+          templow5: "{{ forecast_daily['weather.forecast_home'].forecast[5].templow }}"
+          humidity5: "{{ forecast_daily['weather.forecast_home'].forecast[5].humidity }}"
+          wind_speed5: "{{ forecast_daily['weather.forecast_home'].forecast[5].wind_speed }}"
+          wind_bearing5: "{{ forecast_daily['weather.forecast_home'].forecast[5].wind_bearing }}"
+          precipitation5: "{{ forecast_daily['weather.forecast_home'].forecast[5].precipitation }}"
+
 ################################################################################
 ################################################################################
 ################################################################################
