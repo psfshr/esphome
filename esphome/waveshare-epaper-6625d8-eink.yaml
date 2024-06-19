@@ -103,10 +103,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
-  - id: external_trigger
-    type: bool
-    restore_value: no
-    initial_value: 'false'
   - id: time_since_refresh
     type: int
     restore_value: no
@@ -136,7 +132,6 @@ script:
   - id: update_screen
     then:
       - lambda: 'id(data_updated) = false;'
-      - lambda: 'id(external_trigger) = false;'
       - lambda: 'id(time_since_refresh) = 0;'
       - component.update: eink_display
       - lambda: 'id(recorded_display_refresh) += 1;'
@@ -160,17 +155,17 @@ time:
               condition:
                 and:
                   - lambda: 'return id(data_updated) == true;' # We have to have had new sensor data
-                  - lambda: 'return id(external_trigger) == true;' # We have to had had an external (presense) trigger
                   - lambda: 'return id(time_since_refresh) >= 5;' # It has to have been at least 5 minutes since the last refresh
+                  - lambda: 'return id(mmwave_presence).state == true;' # We have to have presence
               then:
                 - logger.log:
-                    format: "Refreshing display - States are: Sensor Data %d / Activity Trigger %d / Rate Limit Timer %u"
-                    args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
+                    format: "Refreshing display - States are: Sensor Data %d / Rate Limit Timer %u / Presence %d"
+                    args: [ 'id(data_updated)', 'id(time_since_refresh)', id(mmwave_presence).state ]
                 - script.execute: update_screen
               else:
                 - logger.log:
-                    format: "Skipping display refresh -  States are: Sensor Data %d / Activity Trigger %d / Rate Limit Timer %u"
-                    args: [ 'id(data_updated)', 'id(external_trigger)', 'id(time_since_refresh)' ]
+                    format: "Skipping display refresh -  States are: Sensor Data %d / Rate Limit Timer %u / Presence %d"
+                    args: [ 'id(data_updated)', 'id(time_since_refresh)', id(mmwave_presence).state ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
 ###############################################################################
@@ -220,19 +215,17 @@ binary_sensor:
   - platform: ld2420
     has_target:
       name: mmWave Presence
-
-  - platform: homeassistant
-    entity_id: binary_sensor.waveshare_epaper_6625d8_trigger
-    id: waveshare_epaper_6625d8_trigger
-    on_press:
-      then:
-        - lambda: 'id(external_trigger) = true;'
+      id: mmwave_presence
 
 ###############################################################################
 # TEXT SENSORS ################################################################
 ###############################################################################
 
 text_sensor:
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
+
   # Home Assistant General Sensors
   - platform: homeassistant
     entity_id: sensor.timeofday_greeting
@@ -394,10 +387,6 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
-  - platform: ld2420
-    fw_version:
-      name: LD2420 Firmware
-
 ###############################################################################
 # GENERAL SENSORS #############################################################
 ###############################################################################
@@ -408,6 +397,12 @@ sensor:
     name: ESP32 Uptime
     id: sys_uptime
     update_interval: 60s
+
+  - platform: ld2420
+    moving_distance:
+      name : mmWave Moving Distance
+      filters:
+        - throttle: 15s
 
   # Device Sensors - for monitoring device remotely
   - platform: template
@@ -494,10 +489,6 @@ sensor:
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
-
-  - platform: ld2420
-    moving_distance:
-      name : mmWave Moving Distance
 
 ###############################################################################
 # FONTS & TEXT ################################################################
