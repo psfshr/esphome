@@ -688,6 +688,19 @@ font:
   - file:
       type: gfonts
       family: Montserrat
+      weight: 700
+    id: text_large_bold
+    size: 30
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 700
+      glyphs: [ "'" ]
+
+  - file:
+      type: gfonts
+      family: Montserrat
       weight: 500
     id: text_title
     size: 50
@@ -782,22 +795,27 @@ display:
       int panel_y_mid = panel_y / 2;
 
       if (id(initial_data_received) == false) {
+
         // Show loading screen before data is received.
         it.printf(panel_x_mid, panel_y_mid - 35, id(mdi_glyphs_large), TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
         it.printf(panel_x_mid, panel_y_mid + 35, id(text_large), TextAlign::CENTER, "WAITING FOR DATA");
-      } else {
-        // Top Panel - Header
 
+      } else {
+
+        // Dividers
+        it.line(0, 80, 800, 80); // Top Horizontal
+        it.line(500, 80, 500, 225); // Top Middle Vertical
+        it.line(250, 225, 800, 225); // Middle Horizontal
+        it.line(250, 225, 250, 480); // Bottom Left Vertical
+
+        // Top Panel - Header
         it.printf(15, 35, id(text_title), TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str());
         it.strftime(panel_x - 15, 0, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
         it.strftime(panel_x - 15, 35, id(text_large), TextAlign::TOP_RIGHT, "%e %b %Y", id(homeassistant_time).now());
 
-        it.line(5, 80, 775, 80);
-
         // Left-Top - Daily Forecast
-
-        // 55 (70) 125 (70) 195
-        it.printf(125, 105, id(text_large), TextAlign::CENTER, "Today");
+        // Today - 55 (70) 125 (70) 195
+        it.printf(125, 105, id(text_large_bold), TextAlign::CENTER, "Today");
         it.printf(60, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition0).state.c_str()].c_str());
         it.printf(155, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow0).state, id(daily_forecast_temperature0).state);
 
@@ -808,8 +826,8 @@ display:
         it.printf(180, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
         it.printf(210, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed0).state.c_str());
 
-        // 305 (70) 375 (70) 445
-        it.printf(375, 105, id(text_large), TextAlign::CENTER, "Tomorrow");
+        // Tomorrow - 305 (70) 375 (70) 445
+        it.printf(375, 105, id(text_large_bold), TextAlign::CENTER, "Tomorrow");
         it.printf(310, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition1).state.c_str()].c_str());
         it.printf(405, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow1).state, id(daily_forecast_temperature0).state);
 
@@ -821,7 +839,6 @@ display:
         it.printf(460, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed1).state.c_str());
 
         // Left-Side - Hourly Forecast
-
         it.printf(55, 240, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
         it.printf(125, 240, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
         it.printf(195, 240, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature0).state);
@@ -842,15 +859,10 @@ display:
         it.printf(125, 440, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
         it.printf(195, 440, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
-        it.line(500, 85, 500, 220); // Vertical
-        it.line(255, 225, 775, 225); // Horizontal
-        it.line(250, 230, 250, 475); // Vertical
-        
-
-        // Right-Top
-
-        it.printf(730, 120, id(text_large), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
-        it.printf(730, 160, id(text_large), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
+        // Right-Top - Now / Local Sensors
+        it.printf(575, 105, id(text_large_bold), TextAlign::CENTER, "Now");
+        it.printf(575, 150, id(text_large), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
+        it.printf(575, 190, id(text_large), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
 
         // Right-Side
 
