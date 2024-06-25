@@ -810,8 +810,12 @@ display:
 
         // Top Panel - Header
         it.printf(15, 35, id(text_title), TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str());
-        it.strftime(panel_x - 15, 0, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
-        it.strftime(panel_x - 15, 35, id(text_large), TextAlign::TOP_RIGHT, "%e %b %Y", id(homeassistant_time).now());
+
+        it.printf(500, 25, id(text_large), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
+        it.printf(500, 55, id(text_large), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
+
+        it.strftime(785, 0, id(text_large), TextAlign::TOP_RIGHT, "%A", id(homeassistant_time).now());
+        it.strftime(785, 35, id(text_large), TextAlign::TOP_RIGHT, "%e %b %Y", id(homeassistant_time).now());
 
         // Left-Top - Daily Forecast
         // Today - 55 (70) 125 (70) 195
@@ -860,9 +864,6 @@ display:
         it.printf(195, 440, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
         // Right-Top - Now / Local Sensors
-        it.printf(575, 105, id(text_large_bold), TextAlign::CENTER, "Now");
-        it.printf(575, 150, id(text_large), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
-        it.printf(575, 190, id(text_large), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
 
         // Right-Side
 
