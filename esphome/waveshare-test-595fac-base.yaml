@@ -101,7 +101,7 @@ button:
   - platform: restart
     name: "Restart"
   - platform: safe_mode
-    name: ${friendly_name} Restart (Safe Mode)
+    name: "Restart (Safe Mode)"
 
   - platform: factory_reset
     disabled_by_default: True
