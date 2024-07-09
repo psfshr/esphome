@@ -31,9 +31,9 @@ wifi:
 api:
   encryption:
     key: PDqaggnKXPtyz2GE4WA8j/kFTvauCuZ9kdugv4CRZUM=
-ota:
-  platform: esphome
-  password: 9bANiFOqgVV/EtH8AlZ+K0CZ29T/+mBwcVdfxoGE0VI=
+#ota:
+#  platform: esphome
+#  password: 9bANiFOqgVV/EtH8AlZ+K0CZ29T/+mBwcVdfxoGE0VI=
 
 # Enable logging
 logger:
