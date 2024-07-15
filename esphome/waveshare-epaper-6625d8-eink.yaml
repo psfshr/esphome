@@ -227,6 +227,13 @@ text_sensor:
     fw_version:
       name: LD2420 Firmware
 
+  - platform: homeassistant
+    entity_id: sensor.moon_phase
+    id: moon_phase
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;' 
+
   # Home Assistant General Sensors
   - platform: homeassistant
     entity_id: sensor.timeofday_greeting
@@ -736,6 +743,15 @@ font:
       - "\U000F0531" # tree
       - "\U000F1510" # grass
       - "\U000F07A6" # weed
+      - "\U000F0F61" # moon-first-quarter
+      - "\U000F0F62" # moon-full
+      - "\U000F0F63" # moon-last-quarter
+      - "\U000F0F64" # moon-new
+      - "\U000F0F65" # moon-waning-crescent
+      - "\U000F0F66" # moon-waning-gibbous
+      - "\U000F0F67" # moon-waxing-crescent
+      - "\U000F0F68" # moon-waxing-gibbous
+
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_large
@@ -783,9 +799,17 @@ display:
         {"partlycloudy-night", "\U000F0F31"},
         {"", "\U000F02D6"},
         {"clock-alert-outline", "\U000F05CE"},
-        {"tree",  "\U000F0531"},
-        {"grass",  "\U000F1510"},
-        {"weed",  "\U000F07A6"},
+        {"tree", "\U000F0531"},
+        {"grass", "\U000F1510"},
+        {"weed", "\U000F07A6"},
+        {"first_quarter", "\U000F0F61"}, // moon-first-quarter
+        {"full_moon", "\U000F0F62"}, // moon-full
+        {"last_quarter", "\U000F0F63"}, // moon-last-quarter
+        {"new_moon", "\U000F0F64"}, // moon-new
+        {"waning_crescent", "\U000F0F65"}, // moon-waning-crescent
+        {"waning_gibbous", "\U000F0F66"}, // moon-waning-gibbous
+        {"waxing_crescent", "\U000F0F67"}, // moon-waxing-crescent
+        {"waxing_gibbous", "\U000F0F68"}, // moon-waxing-gibbous
       };
 
       // Panel
@@ -863,7 +887,9 @@ display:
         it.printf(125, 440, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
         it.printf(195, 440, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
-        // Right-Top - Now / Local Sensors
+        // Right-Top
+        it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
+        it.printf(570, 170, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
 
         // Right-Side
 
