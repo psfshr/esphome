@@ -223,16 +223,16 @@ binary_sensor:
 ###############################################################################
 
 text_sensor:
-  - platform: ld2420
-    fw_version:
-      name: LD2420 Firmware
-
   - platform: homeassistant
     entity_id: sensor.moon_phase
     id: moon_phase
     on_value:
       then:
         - lambda: 'id(data_updated) = true;' 
+
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
 
   # Home Assistant General Sensors
   - platform: homeassistant
@@ -498,6 +498,34 @@ text_sensor:
 ###############################################################################
 
 sensor:
+  - platform: homeassistant
+    entity_id: sensor.sun_next_dawn
+    id: sun_next_dawn
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;' 
+
+  - platform: homeassistant
+    entity_id: sensor.sun_next_rising
+    id: sun_next_rising
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;' 
+
+  - platform: homeassistant
+    entity_id: sensor.sun_next_setting
+    id: sun_next_setting
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.sun_next_dusk
+    id: sun_next_dusk
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
     #Device UPTIME
   - platform: uptime
     name: ESP32 Uptime
@@ -888,8 +916,17 @@ display:
         it.printf(195, 440, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
         // Right-Top
-        it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
-        it.printf(570, 170, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
+        it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
+        //it.strftime(570, 120, id(text_med), TextAlign::CENTER, "%H:%M", id(sun_next_dawn).now());
+        //it.printf(570, 135, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_rising).state);
+        //it.printf(570, 150, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_setting).state);
+        //it.printf(570, 165, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_dusk).state);
+
+        it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
+        it.filled_circle(715, 170, 30);
+        it.circle(715, 170, 25, COLOR_OFF);
+        //it.filled_regular_polygon(715, 170, 45, EDGES_OCTAGON, VARIATION_FLAT_TOP);
+        it.printf(715, 170, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
 
         // Right-Side
 
