@@ -923,9 +923,10 @@ display:
         //it.printf(570, 165, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_dusk).state);
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
-        it.filled_circle(715, 170, 30);
+        //it.filled_circle(715, 170, 35);
+        it.filled_regular_polygon(715, 170, 35, EDGES_DECAGON, VARIATION_FLAT_TOP);
         it.circle(715, 170, 25, COLOR_OFF);
-        //it.filled_regular_polygon(715, 170, 45, EDGES_OCTAGON, VARIATION_FLAT_TOP);
+        //it.circle(715, 170, 26, COLOR_OFF);
         it.printf(715, 170, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
 
         // Right-Side
