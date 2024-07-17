@@ -169,11 +169,6 @@ time:
                     args: [ 'id(data_updated)', 'id(time_since_refresh)', id(mmwave_presence).state ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
-sun:
-  latitude: 51.61
-  longitude: -1.82
-
-
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
 ###############################################################################
@@ -228,22 +223,6 @@ binary_sensor:
 ###############################################################################
 
 text_sensor:
-  - platform: sun
-    name: Sun Next Sunrise
-    type: sunrise
-    id: sun_next_sunrise
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;' 
-
-  - platform: sun
-    name: Sun Next Sunset
-    type: sunset
-    id: sun_next_sunset
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;' 
-  
   - platform: homeassistant
     entity_id: sensor.moon_phase
     id: moon_phase
@@ -519,22 +498,6 @@ text_sensor:
 ###############################################################################
 
 sensor:
-  - platform: sun
-    name: Sun Elevation
-    type: elevation
-    id: sun_elevation
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-  
-  - platform: sun
-    name: Sun Azimuth
-    type: azimuth
-    id: sun_azimuth
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
     #Device UPTIME
   - platform: uptime
     name: ESP32 Uptime
@@ -849,6 +812,19 @@ display:
         {"waxing_gibbous", "\U000F0F68"}, // moon-waxing-gibbous
       };
 
+      std::map<std::string, std::string> moon_map
+      {
+        {"first_quarter", "First Quarter"}, // moon-first-quarter
+        {"full_moon", "Full Moon"}, // moon-full
+        {"last_quarter", "Last Quarter"}, // moon-last-quarter
+        {"new_moon", "New Moon"}, // moon-new
+        {"waning_crescent", "Waning Crescent"}, // moon-waning-crescent
+        {"waning_gibbous", "Waning Gibbous"}, // moon-waning-gibbous
+        {"waxing_crescent", "Waxing Crescent"}, // moon-waxing-crescent
+        {"waxing_gibbous", "Waxing Gibbous"}, // moon-waxing-gibbous
+      };
+
+
       // Panel
       int panel_x = it.get_width();
       int panel_y = it.get_height();
@@ -926,17 +902,18 @@ display:
 
         // Right-Top
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
-        it.printf(570, 125, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunrise).state.c_str());
-        it.printf(570, 145, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunset).state.c_str());
-        it.printf(570, 165, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_elevation).state);
-        it.printf(570, 185, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_azimuth).state);
+        //it.printf(570, 130, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunrise).state.c_str());
+        //it.printf(570, 155, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunset).state.c_str());
+        //it.printf(570, 180, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_elevation).state);
+        //it.printf(570, 205, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_azimuth).state);
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
-        //it.filled_circle(715, 170, 35);
-        it.filled_regular_polygon(715, 170, 35, EDGES_DECAGON, VARIATION_FLAT_TOP);
-        it.circle(715, 170, 25, COLOR_OFF);
-        //it.circle(715, 170, 26, COLOR_OFF);
-        it.printf(715, 170, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
+        it.filled_circle(715, 155, 30);
+        //it.circle(715, 155, 25, COLOR_OFF);
+        //it.circle(715, 155, 26, COLOR_OFF);
+        it.printf(715, 155, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
+        it.printf(715, 205, id(text_small), TextAlign::CENTER, "%s", moon_map[id(moon_phase).state.c_str()].c_str());
+
 
         // Right-Side
 
