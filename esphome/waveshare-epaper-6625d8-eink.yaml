@@ -169,6 +169,11 @@ time:
                     args: [ 'id(data_updated)', 'id(time_since_refresh)', id(mmwave_presence).state ]
                 - lambda: 'id(time_since_refresh) += 1;'
 
+sun:
+  latitude: 51.61
+  longitude: -1.82
+
+
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
 ###############################################################################
@@ -223,6 +228,22 @@ binary_sensor:
 ###############################################################################
 
 text_sensor:
+  - platform: sun
+    name: Sun Next Sunrise
+    type: sunrise
+    id: sun_next_sunrise
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;' 
+
+  - platform: sun
+    name: Sun Next Sunset
+    type: sunset
+    id: sun_next_sunset
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;' 
+  
   - platform: homeassistant
     entity_id: sensor.moon_phase
     id: moon_phase
@@ -498,30 +519,18 @@ text_sensor:
 ###############################################################################
 
 sensor:
-  - platform: homeassistant
-    entity_id: sensor.sun_next_dawn
-    id: sun_next_dawn
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;' 
-
-  - platform: homeassistant
-    entity_id: sensor.sun_next_rising
-    id: sun_next_rising
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;' 
-
-  - platform: homeassistant
-    entity_id: sensor.sun_next_setting
-    id: sun_next_setting
+  - platform: sun
+    name: Sun Elevation
+    type: elevation
+    id: sun_elevation
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.sun_next_dusk
-    id: sun_next_dusk
+  
+  - platform: sun
+    name: Sun Azimuth
+    type: azimuth
+    id: sun_azimuth
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -917,10 +926,10 @@ display:
 
         // Right-Top
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
-        //it.strftime(570, 120, id(text_med), TextAlign::CENTER, "%H:%M", id(sun_next_dawn).now());
-        //it.printf(570, 135, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_rising).state);
-        //it.printf(570, 150, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_setting).state);
-        //it.printf(570, 165, id(text_med), TextAlign::CENTER, "%2.0f", id(sun_next_dusk).state);
+        it.printf(570, 125, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunrise).state.c_str());
+        it.printf(570, 145, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunset).state.c_str());
+        it.printf(570, 165, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_elevation).state);
+        it.printf(570, 185, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_azimuth).state);
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         //it.filled_circle(715, 170, 35);
