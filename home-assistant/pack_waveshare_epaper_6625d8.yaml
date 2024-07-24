@@ -47,8 +47,8 @@ template:
 
   - trigger:
       - platform: time_pattern
-        minutes: /15
-        seconds: 30
+        minutes: /5
+        seconds: 0
     sensor:
       - name: Octopus Rates
         unique_id: octopus_rates
