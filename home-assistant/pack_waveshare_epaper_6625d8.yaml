@@ -47,6 +47,46 @@ template:
 
   - trigger:
       - platform: time_pattern
+        minutes: /15
+        seconds: 30
+    sensor:
+      - name: Octopus Rates
+        unique_id: octopus_rates
+        state: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate') }}"
+        attributes:
+          prev_rate_start: "{{ as_timestamp(state_attr('sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate','start')) | timestamp_custom('%H:%M') }}"
+          prev_rate_value: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate') }}"
+          prev_curr_dir: >
+            {% set rate1 = states('sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate') %}
+            {% set rate2 = states('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate') %}
+            {% if rate1 < rate2 %}
+                rising
+            {% elif rate1 > rate2 %}
+                falling
+            {% elif rate1 == rate2 %}
+                same
+            {% else %}
+                unknown
+            {% endif %}
+          curr_rate_start: "{{ as_timestamp(state_attr('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate','start')) | timestamp_custom('%H:%M') }}"
+          curr_rate_value: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate') }}"
+          curr_next_dir: >
+            {% set rate1 = states('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate') %}
+            {% set rate2 = states('sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate') %}
+            {% if rate1 < rate2 %}
+                rising
+            {% elif rate1 > rate2 %}
+                falling
+            {% elif rate1 == rate2 %}
+                same
+            {% else %}
+                unknown
+            {% endif %}
+          next_rate_start: "{{ as_timestamp(state_attr('sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate','start')) | timestamp_custom('%H:%M') }}"
+          next_rate_value: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate') }}"
+
+  - trigger:
+      - platform: time_pattern
         hours: /1
         minutes: 0
         seconds: 0
@@ -64,7 +104,7 @@ template:
         state: "none"
         attributes:
           datetime0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].datetime }}"
-          shorttime0: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) | timestamp_custom('%p') }}"
+          shorttime0: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[0].datetime) | timestamp_custom('%H:%M') }}"
           condition0: >
             {% set cond0 = forecast_hourly['weather.forecast_home'].forecast[0].condition %}
             {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
@@ -77,7 +117,7 @@ template:
             {% endif %}
           temperature0: "{{ forecast_hourly['weather.forecast_home'].forecast[0].temperature }}"
           datetime1: "{{ forecast_hourly['weather.forecast_home'].forecast[1].datetime }}"
-          shorttime1: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%p') }}"
+          shorttime1: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[1].datetime) | timestamp_custom('%H:%M') }}"
           condition1: >
             {% set cond1 = forecast_hourly['weather.forecast_home'].forecast[1].condition %}
             {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
@@ -90,7 +130,7 @@ template:
             {% endif %}
           temperature1: "{{ forecast_hourly['weather.forecast_home'].forecast[1].temperature }}"
           datetime2: "{{ forecast_hourly['weather.forecast_home'].forecast[2].datetime }}"
-          shorttime2: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%p') }}"
+          shorttime2: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[2].datetime) | timestamp_custom('%H:%M') }}"
           condition2: >
             {% set cond2 = forecast_hourly['weather.forecast_home'].forecast[2].condition %}
             {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
@@ -103,7 +143,7 @@ template:
             {% endif %}
           temperature2: "{{ forecast_hourly['weather.forecast_home'].forecast[2].temperature }}"
           datetime3: "{{ forecast_hourly['weather.forecast_home'].forecast[3].datetime }}"
-          shorttime3: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%p') }}"
+          shorttime3: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[3].datetime) | timestamp_custom('%H:%M') }}"
           condition3: >
             {% set cond3 = forecast_hourly['weather.forecast_home'].forecast[3].condition %}
             {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
@@ -116,7 +156,7 @@ template:
             {% endif %}
           temperature3: "{{ forecast_hourly['weather.forecast_home'].forecast[3].temperature }}"
           datetime4: "{{ forecast_hourly['weather.forecast_home'].forecast[4].datetime }}"
-          shorttime4: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%I') | int }} {{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%p') }}"
+          shorttime4: "{{ as_timestamp(forecast_hourly['weather.forecast_home'].forecast[4].datetime) | timestamp_custom('%H:%M') }}"
           condition4: >
             {% set cond4 = forecast_hourly['weather.forecast_home'].forecast[4].condition %}
             {% set next_setting = as_timestamp(state_attr('sun.sun', 'next_setting')) %}
@@ -201,7 +241,6 @@ template:
           wind_speed5: "{{ forecast_daily['weather.forecast_home'].forecast[5].wind_speed }}"
           wind_bearing5: "{{ forecast_daily['weather.forecast_home'].forecast[5].wind_bearing }}"
           precipitation5: "{{ forecast_daily['weather.forecast_home'].forecast[5].precipitation }}"
-
 ################################################################################
 ################################################################################
 ################################################################################

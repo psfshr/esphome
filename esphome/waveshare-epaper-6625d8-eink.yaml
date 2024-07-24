@@ -493,6 +493,48 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+##
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_rate_start
+    id: octopus_prev_rate_start
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_rate_start
+    id: octopus_curr_rate_start
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: next_rate_start
+    id: octopus_next_rate_start
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_curr_dir
+    id: octopus_prev_curr_dir
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_next_dir
+    id: octopus_curr_next_dir
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
 ###############################################################################
 # GENERAL SENSORS #############################################################
 ###############################################################################
@@ -647,6 +689,33 @@ sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+##
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_rate_value
+    id: octopus_prev_rate_value
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_rate_value
+    id: octopus_curr_rate_value
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: next_rate_value
+    id: octopus_next_rate_value
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+
 ###############################################################################
 # FONTS & TEXT ################################################################
 ###############################################################################
@@ -664,7 +733,7 @@ font:
         type: gfonts
         family: Montserrat
         weight: 500
-      glyphs: [ "'" ]
+      glyphs: [ "'", "£" ]
 
   - file:
       type: gfonts
@@ -677,8 +746,21 @@ font:
         type: gfonts
         family: Montserrat
         weight: 500
-      glyphs: [ "'" ]
+      glyphs: [ "'", "£" ]
   
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 700
+    id: text_med_bold
+    size: 25
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 700
+      glyphs: [ "'", "£" ]
+
   - file:
       type: gfonts
       family: Montserrat
@@ -690,7 +772,7 @@ font:
         type: gfonts
         family: Montserrat
         weight: 500
-      glyphs: [ "'" ]
+      glyphs: [ "'", "£" ]
 
   - file:
       type: gfonts
@@ -703,7 +785,7 @@ font:
         type: gfonts
         family: Montserrat
         weight: 700
-      glyphs: [ "'" ]
+      glyphs: [ "'", "£" ]
 
   - file:
       type: gfonts
@@ -716,7 +798,7 @@ font:
         type: gfonts
         family: Montserrat
         weight: 500
-      glyphs: [ "'" ]
+      glyphs: [ "'", "£" ]
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_med
@@ -751,7 +833,10 @@ font:
       - "\U000F0F66" # moon-waning-gibbous
       - "\U000F0F67" # moon-waxing-crescent
       - "\U000F0F68" # moon-waxing-gibbous
-
+      - "\U000F0D3E" # transmission-tower
+      - "\U000F0535" # trending-up
+      - "\U000F0533" # trending-down
+      - "\U000F0534" # trending-neutral
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_large
@@ -810,6 +895,11 @@ display:
         {"waning_gibbous", "\U000F0F66"}, // moon-waning-gibbous
         {"waxing_crescent", "\U000F0F67"}, // moon-waxing-crescent
         {"waxing_gibbous", "\U000F0F68"}, // moon-waxing-gibbous
+        {"transmission_tower", "\U000F0D3E"}, // transmission-tower
+        {"rising", "\U000F0535"}, // trending-up
+        {"falling", "\U000F0533"}, // trending-down
+        {"same", "\U000F0534"}, // trending-neutral
+        {"unknown", "\U000F02D6"},
       };
 
       std::map<std::string, std::string> moon_map
@@ -843,14 +933,13 @@ display:
         it.line(0, 80, 800, 80); // Top Horizontal
         it.line(500, 80, 500, 225); // Top Middle Vertical
         it.line(250, 225, 800, 225); // Middle Horizontal
+        it.line(250, 305, 800, 305); // Middle Horizontal 2        
         it.line(250, 225, 250, 480); // Bottom Left Vertical
 
         // Top Panel - Header
         it.printf(15, 40, id(text_title), TextAlign::CENTER_LEFT, "Good %s", id(timeofday_greeting).state.c_str());
-
         it.printf(510, 25, id(text_large), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
         it.printf(510, 55, id(text_large), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
-
         it.strftime(785, 25, id(text_large), TextAlign::CENTER_RIGHT, "%A", id(homeassistant_time).now());
         it.strftime(785, 55, id(text_large), TextAlign::CENTER_RIGHT, "%e %b %Y", id(homeassistant_time).now());
 
@@ -880,27 +969,27 @@ display:
         it.printf(460, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed1).state.c_str());
 
         // Left-Side - Hourly Forecast
-        it.printf(55, 240, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
+        it.printf(55, 240, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
         it.printf(125, 240, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition0).state.c_str()].c_str());
         it.printf(195, 240, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature0).state);
 
-        it.printf(55, 290, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime1).state.c_str());
+        it.printf(55, 290, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime1).state.c_str());
         it.printf(125, 290, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition1).state.c_str()].c_str());
         it.printf(195, 290, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature1).state);
 
-        it.printf(55, 340, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime2).state.c_str());
+        it.printf(55, 340, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime2).state.c_str());
         it.printf(125, 340, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition2).state.c_str()].c_str());
         it.printf(195, 340, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature2).state);
 
-        it.printf(55, 390, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime3).state.c_str());
+        it.printf(55, 390, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime3).state.c_str());
         it.printf(125, 390, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition3).state.c_str()].c_str());
         it.printf(195, 390, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature3).state);
 
-        it.printf(55, 440, id(text_med), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime4).state.c_str());
+        it.printf(55, 440, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime4).state.c_str());
         it.printf(125, 440, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(hourly_forecast_condition4).state.c_str()].c_str());
         it.printf(195, 440, id(text_med), TextAlign::CENTER, "%2.0f°C", id(hourly_forecast_temperature4).state);
 
-        // Right-Top
+        // Right-Top - Sun/Moon
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
         //it.printf(570, 130, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunrise).state.c_str());
         //it.printf(570, 155, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunset).state.c_str());
@@ -909,15 +998,24 @@ display:
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         it.filled_circle(715, 155, 30);
-        //it.circle(715, 155, 25, COLOR_OFF);
-        //it.circle(715, 155, 26, COLOR_OFF);
         it.printf(715, 155, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
         it.printf(715, 205, id(text_small), TextAlign::CENTER, "%s", moon_map[id(moon_phase).state.c_str()].c_str());
 
+        // Right-Middle - Energy (250,225)
+        it.printf(290, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map["transmission_tower"].c_str());
+        it.printf(370, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_prev_rate_start).state.c_str());
+        it.printf(370, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_prev_rate_value).state);
+        it.printf(445, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(octopus_prev_curr_dir).state.c_str()].c_str());
+        it.printf(520, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_curr_rate_start).state.c_str());
+        it.printf(520, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_curr_rate_value).state);
+        it.printf(595, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(octopus_curr_next_dir).state.c_str()].c_str());        
+        it.printf(670, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_next_rate_start).state.c_str());
+        it.printf(670, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_next_rate_value).state);
 
-        // Right-Side
+        // Right-Bottom
 
-        // Bottom-Right
+        //it.printf(445, 440, id(text_med), TextAlign::CENTER, "%s", id(octopus_prev_curr_dir).state.c_str());
+        //it.printf(595, 440, id(text_med), TextAlign::CENTER, "%s", id(octopus_curr_next_dir).state.c_str());        
 
         // Refresh Timestamp
         it.strftime(panel_x - 10, panel_y - 10, id(text_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
