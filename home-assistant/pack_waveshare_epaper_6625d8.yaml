@@ -27,33 +27,21 @@ template:
           {% endif %}
 
   ################################################################################
-  # SMARTFRAME WEATHER ###########################################################
+  # SMARTFRAME ENERGY ############################################################
   ################################################################################
 
   - trigger:
-      - platform: time_pattern
-        minutes: /15
-        seconds: 0
-    sensor:
-      - name: Weather Now
-        unique_id: weather_now
-        state: >
-          {% set cond_now = states('weather.forecast_home') %}
-          {% if states('sun.sun') == 'below_horizon' %}
-              {% if cond_now == 'sunny' %} clear-night {% elif cond_now == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond_now }} {% endif %}
-          {% else %}
-              {{ cond_now }}
-          {% endif %}
-
-  - trigger:
-      - platform: time_pattern
-        minutes: /5
-        seconds: 0
+      - platform: state
+        entity_id:
+          - sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate
+          - sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate
+          - sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate
     sensor:
       - name: Octopus Rates
         unique_id: octopus_rates
         state: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_current_rate') }}"
         attributes:
+          timestamp: "{{ states('sensor.date_time_iso') }}"
           prev_rate_start: "{{ as_timestamp(state_attr('sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate','start')) | timestamp_custom('%H:%M') }}"
           prev_rate_value: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_previous_rate') }}"
           prev_curr_dir: >
@@ -84,6 +72,26 @@ template:
             {% endif %}
           next_rate_start: "{{ as_timestamp(state_attr('sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate','start')) | timestamp_custom('%H:%M') }}"
           next_rate_value: "{{ states('sensor.octopus_energy_electricity_23l3520058_2700001750370_next_rate') }}"
+
+
+  ################################################################################
+  # SMARTFRAME WEATHER ###########################################################
+  ################################################################################
+
+  - trigger:
+      - platform: time_pattern
+        minutes: /15
+        seconds: 0
+    sensor:
+      - name: Weather Now
+        unique_id: weather_now
+        state: >
+          {% set cond_now = states('weather.forecast_home') %}
+          {% if states('sun.sun') == 'below_horizon' %}
+              {% if cond_now == 'sunny' %} clear-night {% elif cond_now == 'partlycloudy' %} partlycloudy-night {% else %} {{ cond_now }} {% endif %}
+          {% else %}
+              {{ cond_now }}
+          {% endif %}
 
   - trigger:
       - platform: time_pattern
