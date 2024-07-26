@@ -945,11 +945,11 @@ display:
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
 
-      int power_rate_high_high = 30;
-      int power_rate_high = 25;
-      int power_rate_neutral = 20;
-      int power_rate_low = 15;
-      int power_rate_low_low = 10;
+      float power_rate_high_high = 0.30;
+      float power_rate_high = 0.25;
+      float power_rate_neutral = 0.20;
+      float power_rate_low = 0.15;
+      float power_rate_low_low = 0.10;
 
       if (id(initial_data_received) == false) {
 
@@ -964,16 +964,16 @@ display:
         if ( id(octopus_curr_rate_value).state >= power_rate_high_high ) {
           power_rate_indicator = "chevron_triple_up";
         }
-        else if ( id(octopus_curr_rate_value).state >= power_rate_high ) {
+        else if ( power_rate_high_high > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state >= power_rate_high ) {
           power_rate_indicator = "chevron_double_up";
         }
-        else if ( id(octopus_curr_rate_value).state >= power_rate_neutral ) {
+        else if ( power_rate_high > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state >= power_rate_neutral ) {
           power_rate_indicator = "chevron_up";
         }
-        else if ( id(octopus_curr_rate_value).state <= power_rate_neutral ) {
+        else if ( power_rate_neutral > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state > power_rate_low ) {
           power_rate_indicator = "chevron_down";
         }
-        else if ( id(octopus_curr_rate_value).state <= power_rate_low ) {
+        else if ( power_rate_low >= id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state > power_rate_low_low ) {
           power_rate_indicator = "chevron_double_down";
         }
         else if ( id(octopus_curr_rate_value).state <= power_rate_low_low ) {
