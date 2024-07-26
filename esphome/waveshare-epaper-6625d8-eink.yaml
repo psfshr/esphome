@@ -727,12 +727,25 @@ font:
       family: Montserrat
       weight: 500
     id: text_small
-    size: 15
+    size: 20
     extras:
       file:
         type: gfonts
         family: Montserrat
         weight: 500
+      glyphs: [ "'", "£" ]
+
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 700
+    id: text_small_bold
+    size: 20
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 700
       glyphs: [ "'", "£" ]
 
   - file:
@@ -837,6 +850,12 @@ font:
       - "\U000F0535" # trending-up
       - "\U000F0533" # trending-down
       - "\U000F0534" # trending-neutral
+      - "\U000F0143" # chevron-up
+      - "\U000F013F" # chevron-double-up
+      - "\U000F0DBC" # chevron-triple-up
+      - "\U000F0140" # chevron-down
+      - "\U000F013C" # chevron-double-down
+      - "\U000F0DB9" # chevron-triple-down
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_large
@@ -882,7 +901,6 @@ display:
         {"windy-variant", "\U000F059E"},
         {"exceptional", "\U000F1C78"},
         {"partlycloudy-night", "\U000F0F31"},
-        {"", "\U000F02D6"},
         {"clock-alert-outline", "\U000F05CE"},
         {"tree", "\U000F0531"},
         {"grass", "\U000F1510"},
@@ -899,7 +917,14 @@ display:
         {"rising", "\U000F0535"}, // trending-up
         {"falling", "\U000F0533"}, // trending-down
         {"same", "\U000F0534"}, // trending-neutral
+        {"chevron_up", "\U000F0143"}, // chevron-up
+        {"chevron_double_up", "\U000F013F"}, // chevron-double-up
+        {"chevron_triple_up", "\U000F0DBC"}, // chevron-triple-up
+        {"chevron_down", "\U000F0140"}, // chevron-down
+        {"chevron_double_down", "\U000F013C"}, // chevron-double-down
+        {"chevron_triple_down", "\U000F0DB9"}, // chevron-triple-down
         {"unknown", "\U000F02D6"},
+        {"", "\U000F02D6"},
       };
 
       std::map<std::string, std::string> moon_map
@@ -914,12 +939,17 @@ display:
         {"waxing_gibbous", "Waxing Gibbous"}, // moon-waxing-gibbous
       };
 
-
       // Panel
       int panel_x = it.get_width();
       int panel_y = it.get_height();
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
+
+      int power_rate_high_high = 30;
+      int power_rate_high = 25;
+      int power_rate_neutral = 20;
+      int power_rate_low = 15;
+      int power_rate_low_low = 10;
 
       if (id(initial_data_received) == false) {
 
@@ -928,6 +958,30 @@ display:
         it.printf(panel_x_mid, panel_y_mid + 35, id(text_large), TextAlign::CENTER, "WAITING FOR DATA");
 
       } else {
+
+        std::string power_rate_indicator;
+
+        if ( id(octopus_curr_rate_value).state >= power_rate_high_high ) {
+          power_rate_indicator = "chevron_triple_up";
+        }
+        else if ( id(octopus_curr_rate_value).state >= power_rate_high ) {
+          power_rate_indicator = "chevron_double_up";
+        }
+        else if ( id(octopus_curr_rate_value).state >= power_rate_neutral ) {
+          power_rate_indicator = "chevron_up";
+        }
+        else if ( id(octopus_curr_rate_value).state <= power_rate_neutral ) {
+          power_rate_indicator = "chevron_down";
+        }
+        else if ( id(octopus_curr_rate_value).state <= power_rate_low ) {
+          power_rate_indicator = "chevron_double_down";
+        }
+        else if ( id(octopus_curr_rate_value).state <= power_rate_low_low ) {
+          power_rate_indicator = "chevron_triple_down";
+        }
+        else {
+          power_rate_indicator = "unknown";
+        }
 
         // Dividers
         it.line(0, 80, 800, 80); // Top Horizontal
@@ -1002,15 +1056,17 @@ display:
         it.printf(715, 205, id(text_small), TextAlign::CENTER, "%s", moon_map[id(moon_phase).state.c_str()].c_str());
 
         // Right-Middle - Energy (250,225)
-        it.printf(290, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map["transmission_tower"].c_str());
-        it.printf(370, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_prev_rate_start).state.c_str());
-        it.printf(370, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_prev_rate_value).state);
+        it.printf(295, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map["transmission_tower"].c_str());
+        it.printf(375, 255, id(text_small_bold), TextAlign::CENTER, "%s", id(octopus_prev_rate_start).state.c_str());
+        it.printf(375, 280, id(text_small), TextAlign::CENTER, "£%1.3f", id(octopus_prev_rate_value).state);
         it.printf(445, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(octopus_prev_curr_dir).state.c_str()].c_str());
-        it.printf(520, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_curr_rate_start).state.c_str());
-        it.printf(520, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_curr_rate_value).state);
-        it.printf(595, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(octopus_curr_next_dir).state.c_str()].c_str());        
-        it.printf(670, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_next_rate_start).state.c_str());
-        it.printf(670, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_next_rate_value).state);
+        it.printf(525, 250, id(text_med_bold), TextAlign::CENTER, "%s", id(octopus_curr_rate_start).state.c_str());
+        it.printf(525, 280, id(text_med), TextAlign::CENTER, "£%1.3f", id(octopus_curr_rate_value).state);
+        it.printf(605, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[id(octopus_curr_next_dir).state.c_str()].c_str());        
+        it.printf(675, 255, id(text_small_bold), TextAlign::CENTER, "%s", id(octopus_next_rate_start).state.c_str());
+        it.printf(675, 280, id(text_small), TextAlign::CENTER, "£%1.3f", id(octopus_next_rate_value).state);
+
+        it.printf(755, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map[power_rate_indicator].c_str());
 
         // Right-Bottom
 
