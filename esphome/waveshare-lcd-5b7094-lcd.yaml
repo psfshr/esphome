@@ -338,22 +338,18 @@ color:
     red: 100%
     green: 0%
     blue: 0%
-    white: 0%
   - id: my_green
     red: 0%
     green: 100%
     blue: 0%
-    white: 0%
   - id: my_blue
     red: 0%
     green: 0%
     blue: 100%
-    white: 0%
   - id: my_white
-    red: 0%
-    green: 0%
-    blue: 0%
-    white: 100%
+    red: 100%
+    green: 100%
+    blue: 100%
 
 ###############################################################################
 # DISPLAY RENDERING ###########################################################
@@ -427,33 +423,27 @@ display:
       int panel_x_mid = panel_x / 2;
       int panel_y_mid = panel_y / 2;
 
-      auto black = Color(0, 0, 0);
-      auto red = Color(255, 0, 0);
-      auto green = Color(0, 255, 0);
-      auto blue = Color(0, 0, 255);
-      auto white = Color(255, 255, 255);
-
       it.fill(black);
-      it.rectangle(0, 0, panel_x, panel_y, id(my_white));
+      it.rectangle(0, 0, panel_x, panel_y, my_white);
 
       if (id(initial_data_received) == false) {
 
         // Show loading screen before data is received.
-        it.printf(panel_x_mid, panel_y_mid - 35, id(mdi_glyphs_large), white, TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
-        it.printf(panel_x_mid, panel_y_mid + 35, id(text_med), white, TextAlign::CENTER, "WAITING FOR DATA");
+        it.printf(panel_x_mid, panel_y_mid - 35, id(mdi_glyphs_large), my_white, TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
+        it.printf(panel_x_mid, panel_y_mid + 35, id(text_med), my_white, TextAlign::CENTER, "WAITING FOR DATA");
 
       } else {
 
-        it.print(panel_x_mid, 40, id(text_med), red, TextAlign::CENTER, "Hello World!");
-        it.printf(panel_x_mid, 80, id(text_med), blue, TextAlign::CENTER, "%d", id(recorded_display_refresh));
+        it.print(panel_x_mid, 40, id(text_med), my_red, TextAlign::CENTER, "Hello World!");
+        it.printf(panel_x_mid, 80, id(text_med), my_blue, TextAlign::CENTER, "%d", id(recorded_display_refresh));
 
-        it.printf(panel_x_mid, 120, id(text_med), TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
-        it.printf(panel_x_mid, 160, id(text_med), TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
-        it.printf(panel_x_mid, 200, id(text_med), TextAlign::CENTER, "%2.0f%%", id(pressure_now).state);
+        it.printf(panel_x_mid, 120, id(text_med), my_white, TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
+        it.printf(panel_x_mid, 160, id(text_med), my_white, TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
+        it.printf(panel_x_mid, 200, id(text_med), my_white, TextAlign::CENTER, "%2.0f%%", id(pressure_now).state);
 
-        it.print(40, 400, id(text_med), id(my_red), TextAlign::CENTER, "R");
-        it.print(80, 400, id(text_med), id(my_green), TextAlign::CENTER, "G");
-        it.print(120, 400, id(text_med), id(my_blue), TextAlign::CENTER, "B");
-        it.print(160, 400, id(text_med), id(my_white), TextAlign::CENTER, "W");
+        it.print(40, 400, id(text_med), my_red, TextAlign::CENTER, "R");
+        it.print(80, 400, id(text_med), my_green, TextAlign::CENTER, "G");
+        it.print(120, 400, id(text_med), my_blue, TextAlign::CENTER, "B");
+        it.print(160, 400, id(text_med), my_white, TextAlign::CENTER, "W");
 
       }
