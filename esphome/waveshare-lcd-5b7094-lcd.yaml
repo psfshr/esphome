@@ -358,11 +358,11 @@ font:
 
 
 color:
-  - id: my_fg
+  - id: my_bg
     red: 100%
     green: 90%
     blue: 100%
-  - id: my_bg
+  - id: my_fg
     red: 0%
     green: 0%
     blue: 0%
@@ -444,7 +444,6 @@ display:
       width: 320
     update_interval: 5s
 #    show_test_card: true
-
     pages:
       - id: page1
         lambda: |-
