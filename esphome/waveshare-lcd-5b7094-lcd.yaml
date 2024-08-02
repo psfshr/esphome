@@ -44,14 +44,11 @@ esphome:
   on_boot:
       priority: 200.0
       then:
+        - display.page.show: page1
         - component.update: lcd_display
-        - wait_until:
-            condition:
-              lambda: 'return id(data_updated) == true;'
-        - delay: 5s # Wait a bit longer so all the items are received
-        - logger.log: "Initial data received. Refreshing display"
-        - lambda: 'id(initial_data_received) = true;'
-        - script.execute: update_screen
+        - light.turn_on: 
+            id: back_light
+            brightness: 100%
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -133,10 +130,6 @@ globals:
     type: int
     restore_value: no
     initial_value: "0"
-  - id: data_updated
-    type: bool
-    restore_value: no
-    initial_value: 'false'
   - id: initial_data_received
     type: bool
     restore_value: no
@@ -145,20 +138,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
-  - id: recorded_display_refresh
-    type: int
-    restore_value: yes
-    initial_value: '0'
-
-# Script for updating screen - Refresh display and publish refresh count and time.
-script:
-  - id: update_screen
-    then:
-      - lambda: 'id(data_updated) = false;'
-      - lambda: 'id(time_since_refresh) = 0;'
-      - component.update: lcd_display
-      - lambda: 'id(recorded_display_refresh) += 1;'
-      - lambda: 'id(display_last_update).publish_state(id(homeassistant_time).now().timestamp);'
 
 # Check whether the display needs to be refreshed
 time:
@@ -168,26 +147,37 @@ time:
       then:
         - logger.log: "Synchronized system clock"
     on_time:
-      - seconds: 0
-        minutes: /1
+      - seconds: 30
         then:
           - output.turn_on: LED
           - if:
               condition:
                 and:
-                  - lambda: 'return id(data_updated) == true;' # We have to have had new sensor data
-                  - lambda: 'return id(time_since_refresh) >= 5;' # It has to have been at least 5 minutes since the last refresh
+                  - lambda: 'return id(time_since_refresh) >= 3;' # It has to have been at least 90 seconds since the last refresh
               then:
-                - logger.log:
-                    format: "Refreshing display - States are: Sensor Data %d / Rate Limit Timer %u"
-                    args: [ 'id(data_updated)', 'id(time_since_refresh)' ]
-                - script.execute: update_screen
+                - logger.log: "Refreshing display"
+                - display.page.show: page1 # Refresh the display to the first page
               else:
-                - logger.log:
-                    format: "Skipping display refresh -  States are: Sensor Data %d / Rate Limit Timer %u"
-                    args: [ 'id(data_updated)', 'id(time_since_refresh)' ]
+                - logger.log: "Skipping display refresh"
                 - lambda: 'id(time_since_refresh) += 1;'
           - output.turn_off: LED
+      # Every morning everyday at 7am
+      - seconds: 0
+        minutes: 0
+        hours: 7
+        then:
+          - light.turn_on: 
+              id: back_light
+              brightness: 100%
+      # Every morning everyday at 7pm brightness decreased to 50%
+      - seconds: 0
+        minutes: 0
+        hours: 19
+        then:
+          - light.turn_on: 
+              id: back_light
+              brightness: 50%
+
 
 ###############################################################################
 # HOME ASSISTANT BUTTONS ######################################################
@@ -204,7 +194,8 @@ button:
     name: ESP32 Refresh Screen
     entity_category: config
     on_press:
-      - script.execute: update_screen
+      - display.page.show: page1
+      - component.update: lcd_display
 
 switch:
   - platform: factory_reset
@@ -217,6 +208,62 @@ switch:
 binary_sensor:
   - platform: status
     name: ESP32 Status
+
+ ########## Status bar buttons 1-5 ##########
+  - platform: touchscreen
+    id: status_bar_1
+    x_min: 0
+    x_max: 79
+    y_min: 399
+    y_max: 479
+    on_click:
+      min_length: 0ms
+      max_length: 500ms
+      then:
+        - display.page.show: page1
+        - component.update: lcd_display
+
+  - platform: touchscreen
+    id: status_bar_2
+    internal: true
+    x_min: 80
+    x_max: 159
+    y_min: 399
+    y_max: 479
+    on_click:
+      min_length: 10ms
+      max_length: 500ms
+      then:
+        - display.page.show: page2
+        - component.update: lcd_display
+
+  - platform: touchscreen
+    id: status_bar_3
+    internal: true
+    x_min: 160
+    x_max: 239
+    y_min: 399
+    y_max: 479
+    on_click:
+      min_length: 10ms
+      max_length: 500ms
+      then:
+        - display.page.show: page3
+        - component.update: lcd_display
+
+  - platform: touchscreen
+    id: status_bar_4
+    internal: true
+    x_min: 240
+    x_max: 319
+    y_min: 399
+    y_max: 479
+    on_click:
+      min_length: 10ms
+      max_length: 500ms
+      then:
+        - display.page.show: page4
+        - component.update: lcd_display
 
 
 ###############################################################################
@@ -233,20 +280,6 @@ sensor:
     update_interval: 60s
 
   # Device Sensors - for monitoring device remotely
-  - platform: template
-    name: Display Last Update
-    device_class: timestamp
-    entity_category: "diagnostic"
-    id: display_last_update
-    
-  - platform: template
-    name: Display Num Refresh
-    accuracy_decimals: 0
-    unit_of_measurement: "Refreshes"
-    state_class: "total_increasing"
-    entity_category: "diagnostic"
-    lambda: 'return id(recorded_display_refresh);'
-  
   - platform: wifi_signal
     name: ESP32 WiFi Signal
     id: wifisignal
@@ -277,23 +310,14 @@ sensor:
   - platform: homeassistant
     entity_id: sensor.front_garden_climate_temperature
     id: temperature_now
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
 
   - platform: homeassistant
     entity_id: sensor.front_garden_climate_humidity
     id: humidity_now
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
 
   - platform: homeassistant
     entity_id: sensor.front_garden_climate_pressure
     id: pressure_now
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
 
 
 ################################################################################
@@ -334,13 +358,27 @@ font:
 
 
 color:
+  - id: my_fg
+    red: 100%
+    green: 90%
+    blue: 100%
+  - id: my_bg
+    red: 0%
+    green: 0%
+    blue: 0%
+
+  - id: my_fg_dim
+    red: 50%
+    green: 45%
+    blue: 50%
+
   - id: my_red
     red: 100%
     green: 0%
     blue: 0%
   - id: my_green
     red: 0%
-    green: 100%
+    green: 90%
     blue: 0%
   - id: my_blue
     red: 0%
@@ -348,8 +386,13 @@ color:
     blue: 100%
   - id: my_white
     red: 100%
-    green: 100%
+    green: 90%
     blue: 100%
+  - id: my_black
+    red: 0%
+    green: 0%
+    blue: 0%
+
 
 ###############################################################################
 # DISPLAY RENDERING ###########################################################
@@ -381,20 +424,10 @@ touchscreen:
                 touch.x_raw,
                 touch.y_raw
                 );
-    # on_update:
-    #   - lambda: |-
-    #         for (auto touch: touches)  {
-    #             if (touch.state <= 2) {
-    #               ESP_LOGI("Touch:update : ", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
-    #             }
-    #         }
-    # on_release:
-    #   - lambda: |-
-    #               ESP_LOGI("Touch:release : ", "release");
 
 display:
   - platform: ili9xxx
-    model: ILI9488
+    model: ILI9488_A
     id: lcd_display
     spi_id: spi_lcd
     dc_pin: GPIO9
@@ -404,46 +437,74 @@ display:
     invert_colors: false
     transform:
       swap_xy: false
-      mirror_x: false
+      mirror_x: true
       mirror_y: false
-#    dimensions:
-#      height: 480
-#      width: 320
-    update_interval: never
+    dimensions:
+      height: 480
+      width: 320
+    update_interval: 5s
 #    show_test_card: true
-    lambda: |-
-      std::map<std::string, std::string> font_icon_map
-      {
-        {"clock-alert-outline", "\U000F05CE"},
-      };
 
-      // Panel
-      int panel_x = it.get_width();
-      int panel_y = it.get_height();
-      int panel_x_mid = panel_x / 2;
-      int panel_y_mid = panel_y / 2;
+    pages:
+      - id: page1
+        lambda: |-
+          id(time_since_refresh) = 0;
 
-      it.fill(black);
-      it.rectangle(0, 0, panel_x, panel_y, my_white);
+          // Panel
+          int panel_x = it.get_width();
+          int panel_y = it.get_height();
+          int panel_x_mid = panel_x / 2;
+          int panel_y_mid = panel_y / 2;
 
-      if (id(initial_data_received) == false) {
+          it.fill(my_bg);
 
-        // Show loading screen before data is received.
-        it.printf(panel_x_mid, panel_y_mid - 35, id(mdi_glyphs_large), my_white, TextAlign::CENTER, font_icon_map["clock-alert-outline"].c_str());
-        it.printf(panel_x_mid, panel_y_mid + 35, id(text_med), my_white, TextAlign::CENTER, "WAITING FOR DATA");
+          it.filled_rectangle(0, 399, 79, 479, my_fg_dim);
+          it.filled_rectangle(80, 399, 159, 479, my_fg);
+          it.filled_rectangle(160, 399, 239, 479, my_fg);
+          it.filled_rectangle(240, 399, 319, 479, my_fg);
 
-      } else {
+          it.print(40, 40, id(text_med), my_red, TextAlign::CENTER, "R");
+          it.print(80, 40, id(text_med), my_green, TextAlign::CENTER, "G");
+          it.print(120, 40, id(text_med), my_blue, TextAlign::CENTER, "B");
+          it.print(160, 40, id(text_med), my_black, TextAlign::CENTER, "K");
+          it.print(200, 40, id(text_med), my_white, TextAlign::CENTER, "W");
 
-        it.print(panel_x_mid, 40, id(text_med), my_red, TextAlign::CENTER, "Hello World!");
-        it.printf(panel_x_mid, 80, id(text_med), my_blue, TextAlign::CENTER, "%d", id(recorded_display_refresh));
+          it.print(panel_x_mid, 140, id(text_med), my_red, TextAlign::CENTER, "Hello World!");
 
-        it.printf(panel_x_mid, 120, id(text_med), my_white, TextAlign::CENTER, "%2.0f°C", id(temperature_now).state);
-        it.printf(panel_x_mid, 160, id(text_med), my_white, TextAlign::CENTER, "%2.0f%%", id(humidity_now).state);
-        it.printf(panel_x_mid, 200, id(text_med), my_white, TextAlign::CENTER, "%2.0f%%", id(pressure_now).state);
+          it.printf(panel_x_mid, 220, id(text_med), my_fg, TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
+          it.printf(panel_x_mid, 260, id(text_med), my_fg, TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
+          it.printf(panel_x_mid, 300, id(text_med), my_fg, TextAlign::CENTER, "%2.0f hPa", id(pressure_now).state);
 
-        it.print(40, 400, id(text_med), my_red, TextAlign::CENTER, "R");
-        it.print(80, 400, id(text_med), my_green, TextAlign::CENTER, "G");
-        it.print(120, 400, id(text_med), my_blue, TextAlign::CENTER, "B");
-        it.print(160, 400, id(text_med), my_white, TextAlign::CENTER, "W");
+      - id: page2
+        lambda: |-
+          id(time_since_refresh) = 0;
 
-      }
+          it.fill(my_bg);
+          it.filled_rectangle(0, 399, 79, 479, my_fg);
+          it.filled_rectangle(80, 399, 159, 479, my_fg_dim);
+          it.filled_rectangle(160, 399, 239, 479, my_fg);
+          it.filled_rectangle(240, 399, 319, 479, my_fg);
+          it.print(100, 100, id(text_med), my_fg, "This is page 2!");
+
+      - id: page3
+        lambda: |-
+          id(time_since_refresh) = 0;
+
+          it.fill(my_bg);
+          it.filled_rectangle(0, 399, 79, 479, my_fg);
+          it.filled_rectangle(80, 399, 159, 479, my_fg);
+          it.filled_rectangle(160, 399, 239, 479, my_fg_dim);
+          it.filled_rectangle(240, 399, 319, 479, my_fg);
+          it.print(100, 100, id(text_med), my_fg, "This is page 3!");
+
+      - id: page4
+        lambda: |-
+          id(time_since_refresh) = 0;
+
+          it.fill(my_bg);
+          it.filled_rectangle(0, 399, 79, 479, my_fg);
+          it.filled_rectangle(80, 399, 159, 479, my_fg);
+          it.filled_rectangle(160, 399, 239, 479, my_fg);
+          it.filled_rectangle(240, 399, 319, 479, my_fg_dim);
+          it.print(100, 100, id(text_med), my_fg, "This is page 4!");
+
