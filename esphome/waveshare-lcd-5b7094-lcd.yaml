@@ -457,10 +457,15 @@ display:
 
           it.fill(my_bg);
 
-          it.filled_rectangle(0, 399, 79, 479, my_fg_dim);
-          it.filled_rectangle(80, 399, 159, 479, my_fg);
-          it.filled_rectangle(160, 399, 239, 479, my_fg);
-          it.filled_rectangle(240, 399, 319, 479, my_fg);
+          it.filled_rectangle(0, 399, 79, 479, my_red);
+          it.filled_rectangle(80, 399, 159, 479, my_green);
+          it.filled_rectangle(160, 399, 239, 479, my_blue);
+          it.filled_rectangle(240, 399, 319, 479, my_black);
+
+          it.filled_circle(39, 339, 40, my_white);
+          it.filled_circle(119, 339, 40, my_white);
+          it.filled_circle(199, 339, 40, my_white);
+          it.filled_circle(279, 339, 40, my_white);
 
           it.print(40, 40, id(text_med), my_red, TextAlign::CENTER, "R");
           it.print(80, 40, id(text_med), my_green, TextAlign::CENTER, "G");
@@ -479,10 +484,14 @@ display:
           id(time_since_refresh) = 0;
 
           it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_fg);
-          it.filled_rectangle(80, 399, 159, 479, my_fg_dim);
-          it.filled_rectangle(160, 399, 239, 479, my_fg);
-          it.filled_rectangle(240, 399, 319, 479, my_fg);
+          it.filled_rectangle(0, 399, 79, 479, my_red);
+          it.filled_rectangle(80, 399, 159, 479, my_green);
+          it.filled_rectangle(160, 399, 239, 479, my_blue);
+          it.filled_rectangle(240, 399, 319, 479, my_black);
+          it.circle(39, 339, 40, my_white);
+          it.circle(119, 339, 40, my_white);
+          it.circle(199, 339, 40, my_white);
+          it.circle(279, 339, 40, my_white);
           it.print(100, 100, id(text_med), my_fg, "This is page 2!");
 
       - id: page3
@@ -490,10 +499,14 @@ display:
           id(time_since_refresh) = 0;
 
           it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_fg);
-          it.filled_rectangle(80, 399, 159, 479, my_fg);
-          it.filled_rectangle(160, 399, 239, 479, my_fg_dim);
-          it.filled_rectangle(240, 399, 319, 479, my_fg);
+          it.filled_rectangle(0, 399, 79, 479, my_red);
+          it.filled_rectangle(80, 399, 159, 479, my_green);
+          it.filled_rectangle(160, 399, 239, 479, my_blue);
+          it.filled_rectangle(240, 399, 319, 479, my_black);
+          it.circle(39, 339, 40, my_white);
+          it.circle(119, 339, 40, my_white);
+          it.circle(199, 339, 40, my_white);
+          it.circle(279, 339, 40, my_white);
           it.print(100, 100, id(text_med), my_fg, "This is page 3!");
 
       - id: page4
@@ -501,9 +514,13 @@ display:
           id(time_since_refresh) = 0;
 
           it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_fg);
-          it.filled_rectangle(80, 399, 159, 479, my_fg);
-          it.filled_rectangle(160, 399, 239, 479, my_fg);
-          it.filled_rectangle(240, 399, 319, 479, my_fg_dim);
+          it.filled_rectangle(0, 399, 79, 479, my_red);
+          it.filled_rectangle(80, 399, 159, 479, my_green);
+          it.filled_rectangle(160, 399, 239, 479, my_blue);
+          it.filled_rectangle(240, 399, 319, 479, my_black);
+          it.circle(39, 339, 40, my_white);
+          it.circle(119, 339, 40, my_white);
+          it.circle(199, 339, 40, my_white);
+          it.circle(279, 339, 40, my_white);
           it.print(100, 100, id(text_med), my_fg, "This is page 4!");
 
