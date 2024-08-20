@@ -726,6 +726,32 @@ font:
       type: gfonts
       family: Montserrat
       weight: 500
+    id: text_extra_small
+    size: 15
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 500
+      glyphs: [ "'", "£" ]
+
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 700
+    id: text_extra_small_bold
+    size: 15
+    extras:
+      file:
+        type: gfonts
+        family: Montserrat
+        weight: 700
+      glyphs: [ "'", "£" ]
+  
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 500
     id: text_small
     size: 20
     extras:
@@ -1053,7 +1079,7 @@ display:
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         it.filled_circle(715, 155, 30);
         it.printf(715, 155, id(mdi_glyphs_large), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map[id(moon_phase).state.c_str()].c_str());
-        it.printf(715, 205, id(text_small), TextAlign::CENTER, "%s", moon_map[id(moon_phase).state.c_str()].c_str());
+        it.printf(715, 205, id(text_extra_small_bold), TextAlign::CENTER, "%s", moon_map[id(moon_phase).state.c_str()].c_str());
 
         // Right-Middle - Energy (250,225)
         it.printf(295, 265, id(mdi_glyphs_large), TextAlign::CENTER, "%s", font_icon_map["transmission_tower"].c_str());
@@ -1074,7 +1100,7 @@ display:
         //it.printf(595, 440, id(text_med), TextAlign::CENTER, "%s", id(octopus_curr_next_dir).state.c_str());        
 
         // Refresh Timestamp
-        it.strftime(panel_x - 10, panel_y - 10, id(text_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
+        it.strftime(panel_x - 10, panel_y - 10, id(text_extra_small), TextAlign::BOTTOM_RIGHT, "%H:%M", id(homeassistant_time).now());
       }
 
 ###############################################################################
