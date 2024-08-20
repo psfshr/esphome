@@ -240,7 +240,7 @@ text_sensor:
     id: timeofday_greeting
     on_value:
       then:
-        - lambda: 'id(data_updated) = true;'  
+        - lambda: 'id(data_updated) = true;'
 
   # Pollen Sensors
   - platform: homeassistant
