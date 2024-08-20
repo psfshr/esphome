@@ -44,7 +44,6 @@ esphome:
   on_boot:
       priority: 200.0
       then:
-        - display.page.show: page1
         - component.update: lcd_display
         - light.turn_on: 
             id: back_light
@@ -147,20 +146,6 @@ time:
       then:
         - logger.log: "Synchronized system clock"
     on_time:
-      - seconds: 30
-        then:
-          - output.turn_on: LED
-          - if:
-              condition:
-                and:
-                  - lambda: 'return id(time_since_refresh) >= 3;' # It has to have been at least 90 seconds since the last refresh
-              then:
-                - logger.log: "Refreshing display"
-                - display.page.show: page1 # Refresh the display to the first page
-              else:
-                - logger.log: "Skipping display refresh"
-                - lambda: 'id(time_since_refresh) += 1;'
-          - output.turn_off: LED
       # Every morning everyday at 7am
       - seconds: 0
         minutes: 0
@@ -190,12 +175,6 @@ button:
     name: ESP32 Restart
   - platform: safe_mode
     name: ESP32 Restart (Safe Mode)
-  - platform: template
-    name: ESP32 Refresh Screen
-    entity_category: config
-    on_press:
-      - display.page.show: page1
-      - component.update: lcd_display
 
 switch:
   - platform: factory_reset
@@ -209,66 +188,51 @@ binary_sensor:
   - platform: status
     name: ESP32 Status
 
- ########## Status bar buttons 1-5 ##########
   - platform: touchscreen
-    id: status_bar_1
+    id: general_touch
     x_min: 0
-    x_max: 79
-    y_min: 399
+    x_max: 319
+    y_min: 0
     y_max: 479
     on_click:
       min_length: 0ms
       max_length: 500ms
       then:
-        - display.page.show: page1
         - component.update: lcd_display
-
-  - platform: touchscreen
-    id: status_bar_2
-    internal: true
-    x_min: 80
-    x_max: 159
-    y_min: 399
-    y_max: 479
-    on_click:
-      min_length: 10ms
-      max_length: 500ms
-      then:
-        - display.page.show: page2
-        - component.update: lcd_display
-
-  - platform: touchscreen
-    id: status_bar_3
-    internal: true
-    x_min: 160
-    x_max: 239
-    y_min: 399
-    y_max: 479
-    on_click:
-      min_length: 10ms
-      max_length: 500ms
-      then:
-        - display.page.show: page3
-        - component.update: lcd_display
-
-  - platform: touchscreen
-    id: status_bar_4
-    internal: true
-    x_min: 240
-    x_max: 319
-    y_min: 399
-    y_max: 479
-    on_click:
-      min_length: 10ms
-      max_length: 500ms
-      then:
-        - display.page.show: page4
-        - component.update: lcd_display
-
 
 ###############################################################################
 
-#text_sensor:
+text_sensor:
+  # Home Assistant General Sensors
+  - platform: homeassistant
+    entity_id: sensor.timeofday_greeting
+    id: timeofday_greeting
+
+  # Octopus Sensors
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_rate_start
+    id: octopus_prev_rate_start
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_rate_start
+    id: octopus_curr_rate_start
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: next_rate_start
+    id: octopus_next_rate_start
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_curr_dir
+    id: octopus_prev_curr_dir
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_next_dir
+    id: octopus_curr_next_dir
 
 ###############################################################################
 
@@ -320,6 +284,23 @@ sensor:
     id: pressure_now
 
 
+  # Octopus Sensors
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: prev_rate_value
+    id: octopus_prev_rate_value
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: curr_rate_value
+    id: octopus_curr_rate_value
+
+  - platform: homeassistant
+    entity_id: sensor.octopus_rates
+    attribute: next_rate_value
+    id: octopus_next_rate_value
+
+
 ################################################################################
 
 
@@ -349,7 +330,45 @@ font:
     id: mdi_glyphs_med
     size: 40
     glyphs: &mdi-glyphs
+      - "\U000F0594" # weather-night / clear-night
+      - "\U000F0590" # weather-cloudy / cloudy
+      - "\U000F0591" # weather-fog / fog
+      - "\U000F0592" # weather-hail / hail
+      - "\U000F0593" # weather-lightning / lightning
+      - "\U000F067E" # weather-lightning-rainy / lightning-rainy
+      - "\U000F0595" # weather-partly-cloudy / partlycloudy
+      - "\U000F0596" # weather-pouring / pouring
+      - "\U000F0597" # weather-rainy / rainy
+      - "\U000F0598" # weather-snowy / snowy
+      - "\U000F067F" # weather-snowy-rainy / snowy-rainy
+      - "\U000F0599" # weather-sunny / sunny
+      - "\U000F059D" # weather-windy / windy
+      - "\U000F059E" # weather-windy-variant / windy-variant
+      - "\U000F1C78" # weather-hurricane-outline / exceptional
+      - "\U000F0F31" # weather-night-partly-cloudy / partlycloudy-night
+      - "\U000F02D6" # Blank
       - "\U000F05CE" # clock-alert-outline
+      - "\U000F0531" # tree
+      - "\U000F1510" # grass
+      - "\U000F07A6" # weed
+      - "\U000F0F61" # moon-first-quarter
+      - "\U000F0F62" # moon-full
+      - "\U000F0F63" # moon-last-quarter
+      - "\U000F0F64" # moon-new
+      - "\U000F0F65" # moon-waning-crescent
+      - "\U000F0F66" # moon-waning-gibbous
+      - "\U000F0F67" # moon-waxing-crescent
+      - "\U000F0F68" # moon-waxing-gibbous
+      - "\U000F0D3E" # transmission-tower
+      - "\U000F0535" # trending-up
+      - "\U000F0533" # trending-down
+      - "\U000F0534" # trending-neutral
+      - "\U000F0143" # chevron-up
+      - "\U000F013F" # chevron-double-up
+      - "\U000F0DBC" # chevron-triple-up
+      - "\U000F0140" # chevron-down
+      - "\U000F013C" # chevron-double-down
+      - "\U000F0DB9" # chevron-triple-down
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_large
@@ -358,11 +377,11 @@ font:
 
 
 color:
-  - id: my_bg
+  - id: my_fg
     red: 100%
     green: 90%
     blue: 100%
-  - id: my_fg
+  - id: my_bg
     red: 0%
     green: 0%
     blue: 0%
@@ -378,7 +397,7 @@ color:
     blue: 0%
   - id: my_green
     red: 0%
-    green: 90%
+    green: 100%
     blue: 0%
   - id: my_blue
     red: 0%
@@ -444,83 +463,101 @@ display:
       width: 320
     update_interval: 5s
 #    show_test_card: true
-    pages:
-      - id: page1
-        lambda: |-
-          id(time_since_refresh) = 0;
+    lambda: |-
+      std::map<std::string, std::string> font_icon_map
+      {
+        {"clear-night", "\U000F0594"},
+        {"cloudy", "\U000F0590"},
+        {"fog", "\U000F0591"},
+        {"hail", "\U000F0592"},
+        {"lightning", "\U000F0593"},
+        {"lightning-rainy", "\U000F067E"},
+        {"partlycloudy", "\U000F0595"},
+        {"pouring", "\U000F0596"},
+        {"rainy", "\U000F0597"},
+        {"snowy", "\U000F0598"},
+        {"snowy-rainy", "\U000F067F"},
+        {"sunny", "\U000F0599"},
+        {"windy", "\U000F059D"},
+        {"windy-variant", "\U000F059E"},
+        {"exceptional", "\U000F1C78"},
+        {"partlycloudy-night", "\U000F0F31"},
+        {"clock-alert-outline", "\U000F05CE"},
+        {"tree", "\U000F0531"},
+        {"grass", "\U000F1510"},
+        {"weed", "\U000F07A6"},
+        {"first_quarter", "\U000F0F61"}, // moon-first-quarter
+        {"full_moon", "\U000F0F62"}, // moon-full
+        {"last_quarter", "\U000F0F63"}, // moon-last-quarter
+        {"new_moon", "\U000F0F64"}, // moon-new
+        {"waning_crescent", "\U000F0F65"}, // moon-waning-crescent
+        {"waning_gibbous", "\U000F0F66"}, // moon-waning-gibbous
+        {"waxing_crescent", "\U000F0F67"}, // moon-waxing-crescent
+        {"waxing_gibbous", "\U000F0F68"}, // moon-waxing-gibbous
+        {"transmission_tower", "\U000F0D3E"}, // transmission-tower
+        {"rising", "\U000F0535"}, // trending-up
+        {"falling", "\U000F0533"}, // trending-down
+        {"same", "\U000F0534"}, // trending-neutral
+        {"chevron_up", "\U000F0143"}, // chevron-up
+        {"chevron_double_up", "\U000F013F"}, // chevron-double-up
+        {"chevron_triple_up", "\U000F0DBC"}, // chevron-triple-up
+        {"chevron_down", "\U000F0140"}, // chevron-down
+        {"chevron_double_down", "\U000F013C"}, // chevron-double-down
+        {"chevron_triple_down", "\U000F0DB9"}, // chevron-triple-down
+        {"unknown", "\U000F02D6"},
+        {"", "\U000F02D6"},
+      };
 
-          // Panel
-          int panel_x = it.get_width();
-          int panel_y = it.get_height();
-          int panel_x_mid = panel_x / 2;
-          int panel_y_mid = panel_y / 2;
+      id(time_since_refresh) = 0;
 
-          it.fill(my_bg);
+      // Panel
+      int panel_x = it.get_width();
+      int panel_y = it.get_height();
+      int panel_x_mid = panel_x / 2;
+      int panel_y_mid = panel_y / 2;
 
-          it.filled_rectangle(0, 399, 79, 479, my_red);
-          it.filled_rectangle(80, 399, 159, 479, my_green);
-          it.filled_rectangle(160, 399, 239, 479, my_blue);
-          it.filled_rectangle(240, 399, 319, 479, my_black);
+      float power_rate_high_high = 0.30;
+      float power_rate_high = 0.25;
+      float power_rate_neutral = 0.20;
+      float power_rate_low = 0.15;
+      float power_rate_low_low = 0.10;
 
-          it.filled_circle(39, 339, 40, my_white);
-          it.filled_circle(119, 339, 40, my_white);
-          it.filled_circle(199, 339, 40, my_white);
-          it.filled_circle(279, 339, 40, my_white);
+      std::string power_rate_indicator;
 
-          it.print(40, 40, id(text_med), my_red, TextAlign::CENTER, "R");
-          it.print(80, 40, id(text_med), my_green, TextAlign::CENTER, "G");
-          it.print(120, 40, id(text_med), my_blue, TextAlign::CENTER, "B");
-          it.print(160, 40, id(text_med), my_black, TextAlign::CENTER, "K");
-          it.print(200, 40, id(text_med), my_white, TextAlign::CENTER, "W");
+      if ( id(octopus_curr_rate_value).state >= power_rate_high_high ) {
+        power_rate_indicator = "chevron_triple_up";
+      }
+      else if ( power_rate_high_high > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state >= power_rate_high ) {
+        power_rate_indicator = "chevron_double_up";
+      }
+      else if ( power_rate_high > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state >= power_rate_neutral ) {
+        power_rate_indicator = "chevron_up";
+      }
+      else if ( power_rate_neutral > id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state > power_rate_low ) {
+        power_rate_indicator = "chevron_down";
+      }
+      else if ( power_rate_low >= id(octopus_curr_rate_value).state && id(octopus_curr_rate_value).state > power_rate_low_low ) {
+        power_rate_indicator = "chevron_double_down";
+      }
+      else if ( id(octopus_curr_rate_value).state <= power_rate_low_low ) {
+        power_rate_indicator = "chevron_triple_down";
+      }
+      else {
+        power_rate_indicator = "unknown";
+      }
 
-          it.print(panel_x_mid, 140, id(text_med), my_red, TextAlign::CENTER, "Hello World!");
+      it.fill(my_bg);
 
-          it.printf(panel_x_mid, 220, id(text_med), my_fg, TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
-          it.printf(panel_x_mid, 260, id(text_med), my_fg, TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
-          it.printf(panel_x_mid, 300, id(text_med), my_fg, TextAlign::CENTER, "%2.0f hPa", id(pressure_now).state);
+      // Top Panel - Header
+      it.filled_rectangle(0, 0, panel_x, 30, my_blue);
+      it.printf(panel_x_mid, 40, id(text_med), my_white, TextAlign::CENTER, "Good %s", id(timeofday_greeting).state.c_str());
 
-      - id: page2
-        lambda: |-
-          id(time_since_refresh) = 0;
+      it.printf(40, 100, id(text_med), my_white, TextAlign::CENTER, "%s", id(octopus_curr_rate_start).state.c_str());
+      it.printf(40, 140, id(text_med), my_white, TextAlign::CENTER, "£%1.3f", id(octopus_curr_rate_value).state);
+      it.printf(40, 180, id(mdi_glyphs_large), my_white, TextAlign::CENTER, "%s", font_icon_map[power_rate_indicator].c_str());
 
-          it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_red);
-          it.filled_rectangle(80, 399, 159, 479, my_green);
-          it.filled_rectangle(160, 399, 239, 479, my_blue);
-          it.filled_rectangle(240, 399, 319, 479, my_black);
-          it.circle(39, 339, 40, my_white);
-          it.circle(119, 339, 40, my_white);
-          it.circle(199, 339, 40, my_white);
-          it.circle(279, 339, 40, my_white);
-          it.print(100, 100, id(text_med), my_fg, "This is page 2!");
+      it.printf(panel_x_mid, 220, id(text_med), my_fg, TextAlign::CENTER, "%2.0f °C", id(temperature_now).state);
+      it.printf(panel_x_mid, 260, id(text_med), my_fg, TextAlign::CENTER, "%2.0f %%", id(humidity_now).state);
+      it.printf(panel_x_mid, 300, id(text_med), my_fg, TextAlign::CENTER, "%2.0f hPa", id(pressure_now).state);
 
-      - id: page3
-        lambda: |-
-          id(time_since_refresh) = 0;
-
-          it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_red);
-          it.filled_rectangle(80, 399, 159, 479, my_green);
-          it.filled_rectangle(160, 399, 239, 479, my_blue);
-          it.filled_rectangle(240, 399, 319, 479, my_black);
-          it.circle(39, 339, 40, my_white);
-          it.circle(119, 339, 40, my_white);
-          it.circle(199, 339, 40, my_white);
-          it.circle(279, 339, 40, my_white);
-          it.print(100, 100, id(text_med), my_fg, "This is page 3!");
-
-      - id: page4
-        lambda: |-
-          id(time_since_refresh) = 0;
-
-          it.fill(my_bg);
-          it.filled_rectangle(0, 399, 79, 479, my_red);
-          it.filled_rectangle(80, 399, 159, 479, my_green);
-          it.filled_rectangle(160, 399, 239, 479, my_blue);
-          it.filled_rectangle(240, 399, 319, 479, my_black);
-          it.circle(39, 339, 40, my_white);
-          it.circle(119, 339, 40, my_white);
-          it.circle(199, 339, 40, my_white);
-          it.circle(279, 339, 40, my_white);
-          it.print(100, 100, id(text_med), my_fg, "This is page 4!");
 
