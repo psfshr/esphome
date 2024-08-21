@@ -1,5 +1,5 @@
 esphome:
-  name: "picow-0bdf30"
+  name: picow-0bdf30
   friendly_name: PicoW 0bdf30
   on_boot:
       priority: 200.0

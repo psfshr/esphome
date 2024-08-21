@@ -1,39 +1,10 @@
 ###############################################################################
-# NOTES #######################################################################
-###############################################################################
-
-# https://www.waveshare.com/wiki/ESP32-S3-Zero
-# https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf
-
-
-# https://www.aliexpress.com/item/1005005791515997.html
-# Resolution:480*320
-# Drive ic:ili9488
-
-# 1 VCC power input (3.3V~5V)
-# 2 GND power supply ground
-
-# 3 CS LCD film selection - GPIO6 - Brown
-# 4 RESET LCD reset - GPIO5 - Red
-# 5 DC LCD bus command/data selection - GPIO4 - Orange
-# 6 SDI (MoSi) LCD SPI display bus data input - GPIO3 - Yellow
-# 7 SCK LCD SPI display bus clock signal - GPIO2 - Green
-# 8 LED LCD backlight control (high level lighting) - GPIO7
-# 9 SDO (MISO) LCD SPI display bus data input and output - GPIO1 - Blue
-
-# 10 t _ clk SPI bus clock signal of touch panel
-# 11 t _ cs Chip selection of SPI bus for touch panel
-# 12 t _ din touch panel SPI bus data input
-# 13 t _ do touch panel SPI bus data output
-# 14 t _ IRQ touch panel interrupts IRQ signal.
-
-###############################################################################
 # BASE DEVICE CONFIG ##########################################################
 ###############################################################################
 
 substitutions:
-  name: waveshare-lcd-5b7094
-  friendly_name: WaveShare LCD 5b7094
+  name: waveshare-zero-5b7094
+  friendly_name: WaveShare Zero Base 5b7094
 
 esphome:
   name: ${name}
@@ -41,10 +12,6 @@ esphome:
   name_add_mac_suffix: false
   platformio_options:
     board_build.flash_mode: dio
-  on_boot:
-      priority: 200.0
-      then:
-        - component.update: lcd_display
 
 esp32:
   board: esp32-s3-devkitc-1

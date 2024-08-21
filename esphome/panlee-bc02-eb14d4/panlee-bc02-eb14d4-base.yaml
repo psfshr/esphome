@@ -12,7 +12,7 @@
 ###############################################################################
 
 substitutions:
-  name: "panlee-bc02-eb14d4"
+  name: panlee-bc02-eb14d4
   friendly_name: PanLee BC02
 
 esphome:

@@ -32,7 +32,7 @@
 ###############################################################################
 
 substitutions:
-  name: waveshare-lcd-5b7094
+  name: waveshare-zero-5b7094
   friendly_name: WaveShare LCD 5b7094
 
 esphome:
