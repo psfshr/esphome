@@ -16,7 +16,7 @@
 
 substitutions:
   name: waveshare-test-595fac
-  friendly_name: WaveShare Test 595fac
+  friendly_name: WaveShare Zero LD2420 595fac
 
 esphome:
   name: ${name}
