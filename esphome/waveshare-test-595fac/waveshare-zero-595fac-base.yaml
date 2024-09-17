@@ -11,7 +11,7 @@
 ###############################################################################
 
 substitutions:
-  name: waveshare-test-595fac
+  name: waveshare-zero-595fac
   friendly_name: WaveShare Test 595fac
 
 esphome:
