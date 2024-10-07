@@ -577,6 +577,21 @@ sensor:
 
   # Home Assistant General Sensors
 
+  # Sun Sensors
+  - platform: homeassistant
+    entity_id: sensor.sun_solar_azimuth
+    id: sun_solar_azimuth
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.sun_solar_elevation
+    id: sun_solar_elevation
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
   # Weather Sensors - Now
   - platform: homeassistant
     entity_id: sensor.front_garden_climate_temperature
@@ -977,6 +992,9 @@ display:
       float power_rate_low = 0.15;
       float power_rate_low_low = 0.10;
 
+      int sun_y_pos = 0;
+      int sun_y_disp = 0;
+
       if (id(initial_data_received) == false) {
 
         // Show loading screen before data is received.
@@ -1071,10 +1089,25 @@ display:
 
         // Right-Top - Sun/Moon
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
-        //it.printf(570, 130, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunrise).state.c_str());
-        //it.printf(570, 155, id(text_med), TextAlign::CENTER, "%s", id(sun_next_sunset).state.c_str());
-        //it.printf(570, 180, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_elevation).state);
-        //it.printf(570, 205, id(text_med), TextAlign::CENTER, "%3.0f", id(sun_azimuth).state);
+
+        // Y Max = 170 - 45 = 215
+        // Y Min = 170 + 45 = 125
+
+        sun_y_pos = (int) id(sun_solar_elevation).state / 2;
+        sun_y_disp = 170 - sun_y_pos;
+
+        it.line(520, 170, 620, 170); // Horizon
+
+        it.filled_circle(570, sun_y_disp, 10);
+
+
+
+        it.printf(400, 380, id(text_med), TextAlign::CENTER, "%d", sun_y_pos);
+        it.printf(400, 405, id(text_med), TextAlign::CENTER, "%d", sun_y_disp);
+
+
+        it.printf(570, 380, id(text_med), TextAlign::CENTER, "A %3.0f°", id(sun_solar_azimuth).state);
+        it.printf(570, 405, id(text_med), TextAlign::CENTER, "E %3.0f°", id(sun_solar_elevation).state);
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         it.filled_circle(715, 155, 30);
