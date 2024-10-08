@@ -1020,9 +1020,7 @@ display:
       float power_rate_low_low = 0.10;
 
       int sun_y_pos = 0;
-      int sun_x_pos = 0;
       int sun_y_disp = 0;
-      int sun_x_disp = 0;
 
       if (id(initial_data_received) == false) {
 
@@ -1120,30 +1118,24 @@ display:
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
 
         // Y Max/Min = 170 +- 45 = 215 / 125
-        // X Max/Min = 570 +- 45 = 615 / 525
 
-        it.line(520, 170, 620, 170); // Horizon
+        //it.line(510, 170, 550, 170); // Horizon
+        it.filled_rectangle(510, 169, 40, 3); // Horizon
 
-        sun_y_pos = (int) id(sun_solar_elevation).state / 2;
+        sun_y_pos = (int) id(sun_solar_elevation).state / 1.5;
         sun_y_disp = 170 - sun_y_pos;
 
-        //sun_x_pos = (int) id(sun_solar_azimuth).state / 4;
-        //sun_x_disp = 570 - sun_x_pos;
-
-        it.filled_circle(570, sun_y_disp, 10);
+        it.filled_circle(530, sun_y_disp, 10);
 
         if ( id(sun_solar_rising).state == "True" ) {
-          it.printf(570, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_up_bold"].c_str());
+          it.printf(530, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_up_bold"].c_str());
         }
         else {
-          it.printf(570, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_down_bold"].c_str());
+          it.printf(530, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_down_bold"].c_str());
         }
 
-        it.printf(400, 380, id(text_med), TextAlign::CENTER, "%d", sun_y_pos);
-        it.printf(400, 405, id(text_med), TextAlign::CENTER, "%d", sun_y_disp);
-        it.printf(570, 380, id(text_med), TextAlign::CENTER, "A %3.0f°", id(sun_solar_azimuth).state);
-        it.printf(570, 405, id(text_med), TextAlign::CENTER, "E %3.0f°", id(sun_solar_elevation).state);
-        it.printf(570, 430, id(text_med), TextAlign::CENTER, "R %s", id(sun_solar_rising).state.c_str());
+        it.printf(590, 155, id(text_small), TextAlign::CENTER, "%3.0f°", id(sun_solar_azimuth).state);
+        it.printf(590, 185, id(text_small), TextAlign::CENTER, "%3.0f°", id(sun_solar_elevation).state);
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         it.filled_circle(715, 155, 30);
