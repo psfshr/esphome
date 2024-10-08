@@ -291,6 +291,19 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+
+
+
+  - platform: homeassistant
+    entity_id: sensor.sun_solar_rising
+    id: sun_solar_rising
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+
+
+
   # Weather Sensors - Now
   - platform: homeassistant
     entity_id: sensor.weather_now
@@ -855,6 +868,15 @@ font:
       glyphs: [ "'", "£" ]
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
+    id: mdi_glyphs_extra_small
+    size: 15
+    glyphs:
+      - "\U000F19B2" # arrow-up-thin
+      - "\U000F0737" # arrow-up-bold
+      - "\U000F19B3" # arrow-down-thin
+      - "\U000F072E" # arrow-down-bold
+
+  - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_med
     size: 40
     glyphs: &mdi-glyphs
@@ -966,6 +988,11 @@ display:
         {"chevron_triple_down", "\U000F0DB9"}, // chevron-triple-down
         {"unknown", "\U000F02D6"},
         {"", "\U000F02D6"},
+
+        {"arrow_up_thin", "\U000F19B2"}, // arrow-up-thin
+        {"arrow_up_bold", "\U000F0737"}, // arrow-up-bold
+        {"arrow_down_thin", "\U000F19B3"}, // arrow-down-thin
+        {"arrow_down_bold", "\U000F072E"}, // arrow-down-bold
       };
 
       std::map<std::string, std::string> moon_map
@@ -993,7 +1020,9 @@ display:
       float power_rate_low_low = 0.10;
 
       int sun_y_pos = 0;
+      int sun_x_pos = 0;
       int sun_y_disp = 0;
+      int sun_x_disp = 0;
 
       if (id(initial_data_received) == false) {
 
@@ -1090,24 +1119,31 @@ display:
         // Right-Top - Sun/Moon
         it.printf(570, 105, id(text_large_bold), TextAlign::CENTER, "Sun");
 
-        // Y Max = 170 - 45 = 215
-        // Y Min = 170 + 45 = 125
+        // Y Max/Min = 170 +- 45 = 215 / 125
+        // X Max/Min = 570 +- 45 = 615 / 525
+
+        it.line(520, 170, 620, 170); // Horizon
 
         sun_y_pos = (int) id(sun_solar_elevation).state / 2;
         sun_y_disp = 170 - sun_y_pos;
 
-        it.line(520, 170, 620, 170); // Horizon
+        //sun_x_pos = (int) id(sun_solar_azimuth).state / 4;
+        //sun_x_disp = 570 - sun_x_pos;
 
         it.filled_circle(570, sun_y_disp, 10);
 
-
+        if ( id(sun_solar_rising).state == "True" ) {
+          it.printf(570, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_up_bold"].c_str());
+        }
+        else {
+          it.printf(570, sun_y_disp, id(mdi_glyphs_extra_small), COLOR_OFF, TextAlign::CENTER, "%s", font_icon_map["arrow_down_bold"].c_str());
+        }
 
         it.printf(400, 380, id(text_med), TextAlign::CENTER, "%d", sun_y_pos);
         it.printf(400, 405, id(text_med), TextAlign::CENTER, "%d", sun_y_disp);
-
-
         it.printf(570, 380, id(text_med), TextAlign::CENTER, "A %3.0f°", id(sun_solar_azimuth).state);
         it.printf(570, 405, id(text_med), TextAlign::CENTER, "E %3.0f°", id(sun_solar_elevation).state);
+        it.printf(570, 430, id(text_med), TextAlign::CENTER, "R %s", id(sun_solar_rising).state.c_str());
 
         it.printf(715, 105, id(text_large_bold), TextAlign::CENTER, "Moon");
         it.filled_circle(715, 155, 30);
