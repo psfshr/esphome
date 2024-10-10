@@ -243,53 +243,53 @@ text_sensor:
         - lambda: 'id(data_updated) = true;'
 
   # Pollen Sensors
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_0
-    attribute: grassIndex
-    id: pollen_now_grass0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_0
+  #   attribute: grassIndex
+  #   id: pollen_now_grass0
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_0
-    attribute: treeIndex
-    id: pollen_now_tree0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_0
+  #   attribute: treeIndex
+  #   id: pollen_now_tree0
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_0
-    attribute: weedIndex
-    id: pollen_now_weed0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_0
+  #   attribute: weedIndex
+  #   id: pollen_now_weed0
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_1
-    attribute: grassIndex
-    id: pollen_now_grass1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_1
+  #   attribute: grassIndex
+  #   id: pollen_now_grass1
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_1
-    attribute: treeIndex
-    id: pollen_now_tree1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_1
+  #   attribute: treeIndex
+  #   id: pollen_now_tree1
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
-  - platform: homeassistant
-    entity_id: sensor.pollen_day_1
-    attribute: weedIndex
-    id: pollen_now_weed1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
+  # - platform: homeassistant
+  #   entity_id: sensor.pollen_day_1
+  #   attribute: weedIndex
+  #   id: pollen_now_weed1
+  #   on_value:
+  #     then:
+  #       - lambda: 'id(data_updated) = true;'
 
 
 
@@ -1074,24 +1074,24 @@ display:
         it.printf(60, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition0).state.c_str()].c_str());
         it.printf(155, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow0).state, id(daily_forecast_temperature0).state);
 
-        it.printf(40, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
-        it.printf(70, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass0).state.c_str());
-        it.printf(110, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
-        it.printf(140, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree0).state.c_str());
-        it.printf(180, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
-        it.printf(210, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed0).state.c_str());
+        // it.printf(40, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
+        // it.printf(70, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass0).state.c_str());
+        // it.printf(110, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
+        // it.printf(140, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree0).state.c_str());
+        // it.printf(180, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
+        // it.printf(210, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed0).state.c_str());
 
         // Tomorrow - 305 (70) 375 (70) 445
         it.printf(375, 105, id(text_large_bold), TextAlign::CENTER, "Tomorrow");
         it.printf(310, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition1).state.c_str()].c_str());
         it.printf(405, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow1).state, id(daily_forecast_temperature0).state);
 
-        it.printf(290, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
-        it.printf(320, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass1).state.c_str());
-        it.printf(360, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
-        it.printf(390, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree1).state.c_str());
-        it.printf(430, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
-        it.printf(460, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed1).state.c_str());
+        // it.printf(290, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
+        // it.printf(320, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass1).state.c_str());
+        // it.printf(360, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
+        // it.printf(390, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree1).state.c_str());
+        // it.printf(430, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
+        // it.printf(460, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed1).state.c_str());
 
         // Left-Side - Hourly Forecast
         it.printf(55, 240, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
