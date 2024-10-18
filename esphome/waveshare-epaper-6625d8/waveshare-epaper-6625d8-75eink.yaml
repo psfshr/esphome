@@ -284,24 +284,6 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_daily
-    attribute: wind_speed0
-    id: wind_speed0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
-    attribute: wind_bearing0
-    id: wind_bearing0
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-#
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
     attribute: datetime1
     id: daily_forecast_datetime1
     on_value:
@@ -324,25 +306,6 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
-    attribute: wind_speed1
-    id: wind_speed1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
-    attribute: wind_bearing1
-    id: wind_bearing1
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-#
-
   - platform: homeassistant
     entity_id: sensor.weather_forecast_daily
     attribute: datetime2
@@ -363,22 +326,6 @@ text_sensor:
     entity_id: sensor.weather_forecast_daily
     attribute: condition2
     id: daily_forecast_condition2
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
-    attribute: wind_speed2
-    id: wind_speed2
-    on_value:
-      then:
-        - lambda: 'id(data_updated) = true;'
-
-  - platform: homeassistant
-    entity_id: sensor.weather_forecast_daily
-    attribute: wind_bearing2
-    id: wind_bearing2
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -644,6 +591,22 @@ sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed0
+    id: wind_speed0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing0
+    id: wind_bearing0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
     attribute: temperature1
     id: daily_forecast_temperature1
     on_value:
@@ -654,6 +617,24 @@ sensor:
     entity_id: sensor.weather_forecast_daily
     attribute: templow1
     id: daily_forecast_templow1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed1
+    id: wind_speed1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing1
+    id: wind_bearing1
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -670,6 +651,22 @@ sensor:
     entity_id: sensor.weather_forecast_daily
     attribute: templow2
     id: daily_forecast_templow2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed2
+    id: wind_speed2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing2
+    id: wind_bearing2
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -1068,9 +1065,9 @@ display:
         it.printf(155, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow0).state, id(daily_forecast_temperature0).state);
 
         it.printf(50, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["windy"].c_str());
-        it.printf(100, 190, id(text_small), TextAlign::CENTER, "%s", id(wind_speed0).state.c_str());
+        it.printf(100, 190, id(text_med), TextAlign::CENTER, "%2.0f", id(wind_speed0).state);
         it.printf(150, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["compass-outline"].c_str());
-        it.printf(200, 190, id(text_small), TextAlign::CENTER, "%s°", id(wind_bearing0).state.c_str());
+        it.printf(200, 190, id(text_med), TextAlign::CENTER, "%3.0f°", id(wind_bearing0).state);
 
         // Tomorrow - 305 (70) 375 (70) 445
         it.printf(375, 105, id(text_large_bold), TextAlign::CENTER, "Tomorrow");
@@ -1078,9 +1075,9 @@ display:
         it.printf(405, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow1).state, id(daily_forecast_temperature0).state);
 
         it.printf(300, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["windy"].c_str());
-        it.printf(350, 190, id(text_small), TextAlign::CENTER, "%s", id(wind_speed1).state.c_str());
+        it.printf(350, 190, id(text_med), TextAlign::CENTER, "%2.0f", id(wind_speed1).state);
         it.printf(400, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["compass-outline"].c_str());
-        it.printf(450, 190, id(text_small), TextAlign::CENTER, "%s°", id(wind_bearing1).state.c_str());
+        it.printf(450, 190, id(text_med), TextAlign::CENTER, "%3.0f°", id(wind_bearing1).state);
 
         // Left-Side - Hourly Forecast
         it.printf(55, 240, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
