@@ -242,67 +242,12 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
-  # Pollen Sensors
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_0
-  #   attribute: grassIndex
-  #   id: pollen_now_grass0
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_0
-  #   attribute: treeIndex
-  #   id: pollen_now_tree0
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_0
-  #   attribute: weedIndex
-  #   id: pollen_now_weed0
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_1
-  #   attribute: grassIndex
-  #   id: pollen_now_grass1
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_1
-  #   attribute: treeIndex
-  #   id: pollen_now_tree1
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-  # - platform: homeassistant
-  #   entity_id: sensor.pollen_day_1
-  #   attribute: weedIndex
-  #   id: pollen_now_weed1
-  #   on_value:
-  #     then:
-  #       - lambda: 'id(data_updated) = true;'
-
-
-
-
   - platform: homeassistant
     entity_id: sensor.sun_solar_rising
     id: sun_solar_rising
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
-
-
-
 
   # Weather Sensors - Now
   - platform: homeassistant
@@ -339,6 +284,24 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed0
+    id: wind_speed0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing0
+    id: wind_bearing0
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+#
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
     attribute: datetime1
     id: daily_forecast_datetime1
     on_value:
@@ -361,6 +324,25 @@ text_sensor:
       then:
         - lambda: 'id(data_updated) = true;'
 
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed1
+    id: wind_speed1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing1
+    id: wind_bearing1
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+#
+
   - platform: homeassistant
     entity_id: sensor.weather_forecast_daily
     attribute: datetime2
@@ -381,6 +363,22 @@ text_sensor:
     entity_id: sensor.weather_forecast_daily
     attribute: condition2
     id: daily_forecast_condition2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_speed2
+    id: wind_speed2
+    on_value:
+      then:
+        - lambda: 'id(data_updated) = true;'
+
+  - platform: homeassistant
+    entity_id: sensor.weather_forecast_daily
+    attribute: wind_bearing2
+    id: wind_bearing2
     on_value:
       then:
         - lambda: 'id(data_updated) = true;'
@@ -898,9 +896,6 @@ font:
       - "\U000F0F31" # weather-night-partly-cloudy / partlycloudy-night
       - "\U000F02D6" # Blank
       - "\U000F05CE" # clock-alert-outline
-      - "\U000F0531" # tree
-      - "\U000F1510" # grass
-      - "\U000F07A6" # weed
       - "\U000F0F61" # moon-first-quarter
       - "\U000F0F62" # moon-full
       - "\U000F0F63" # moon-last-quarter
@@ -919,6 +914,7 @@ font:
       - "\U000F0140" # chevron-down
       - "\U000F013C" # chevron-double-down
       - "\U000F0DB9" # chevron-triple-down
+      - "\U000F018C" # compass-outline
 
   - file: "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.ttf"
     id: mdi_glyphs_large
@@ -965,9 +961,6 @@ display:
         {"exceptional", "\U000F1C78"},
         {"partlycloudy-night", "\U000F0F31"},
         {"clock-alert-outline", "\U000F05CE"},
-        {"tree", "\U000F0531"},
-        {"grass", "\U000F1510"},
-        {"weed", "\U000F07A6"},
         {"first_quarter", "\U000F0F61"}, // moon-first-quarter
         {"full_moon", "\U000F0F62"}, // moon-full
         {"last_quarter", "\U000F0F63"}, // moon-last-quarter
@@ -988,11 +981,11 @@ display:
         {"chevron_triple_down", "\U000F0DB9"}, // chevron-triple-down
         {"unknown", "\U000F02D6"},
         {"", "\U000F02D6"},
-
         {"arrow_up_thin", "\U000F19B2"}, // arrow-up-thin
         {"arrow_up_bold", "\U000F0737"}, // arrow-up-bold
         {"arrow_down_thin", "\U000F19B3"}, // arrow-down-thin
         {"arrow_down_bold", "\U000F072E"}, // arrow-down-bold
+        {"compass-outline", "\U000F018C"}, // compass-outline
       };
 
       std::map<std::string, std::string> moon_map
@@ -1074,24 +1067,20 @@ display:
         it.printf(60, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition0).state.c_str()].c_str());
         it.printf(155, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow0).state, id(daily_forecast_temperature0).state);
 
-        // it.printf(40, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
-        // it.printf(70, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass0).state.c_str());
-        // it.printf(110, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
-        // it.printf(140, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree0).state.c_str());
-        // it.printf(180, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
-        // it.printf(210, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed0).state.c_str());
+        it.printf(50, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["windy"].c_str());
+        it.printf(100, 190, id(text_small), TextAlign::CENTER, "%s", id(wind_speed0).state.c_str());
+        it.printf(150, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["compass-outline"].c_str());
+        it.printf(200, 190, id(text_small), TextAlign::CENTER, "%s°", id(wind_bearing0).state.c_str());
 
         // Tomorrow - 305 (70) 375 (70) 445
         it.printf(375, 105, id(text_large_bold), TextAlign::CENTER, "Tomorrow");
         it.printf(310, 145, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map[id(daily_forecast_condition1).state.c_str()].c_str());
         it.printf(405, 145, id(text_med), TextAlign::CENTER, "%2.0f - %2.0f°C", id(daily_forecast_templow1).state, id(daily_forecast_temperature0).state);
 
-        // it.printf(290, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["tree"].c_str());
-        // it.printf(320, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_grass1).state.c_str());
-        // it.printf(360, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["grass"].c_str());
-        // it.printf(390, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_tree1).state.c_str());
-        // it.printf(430, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["weed"].c_str());
-        // it.printf(460, 190, id(text_med), TextAlign::CENTER, "%s", id(pollen_now_weed1).state.c_str());
+        it.printf(300, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["windy"].c_str());
+        it.printf(350, 190, id(text_small), TextAlign::CENTER, "%s", id(wind_speed1).state.c_str());
+        it.printf(400, 190, id(mdi_glyphs_med), TextAlign::CENTER, "%s", font_icon_map["compass-outline"].c_str());
+        it.printf(450, 190, id(text_small), TextAlign::CENTER, "%s°", id(wind_bearing1).state.c_str());
 
         // Left-Side - Hourly Forecast
         it.printf(55, 240, id(text_med_bold), TextAlign::CENTER, "%s", id(hourly_forecast_shorttime0).state.c_str());
